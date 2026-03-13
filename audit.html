@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAQ Publishing — Audit Check</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #141414; --ink2: #2d2d2d; --ink3: #555; --ink4: #888; --ink5: #bbb;
+  --paper: #f4f1eb; --paper2: #ede9e1; --paper3: #e5e0d7;
+  --rule: #d8d2c8; --rule2: #c8c1b5;
+  --gold: #8b6914; --gold-bg: #f7f0de; --gold-border: #d4af5a;
+  --red: #c0392b; --red-bg: #fdf0ee;
+  --amber: #a0570a; --amber-bg: #fdf4e7;
+  --green: #1a5c35; --green-bg: #e8f5ee;
+  --blue: #1a3d7b; --blue-bg: #e8eef8;
+  --serif: 'DM Serif Display', serif;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+body.dark {
+  --ink:#f0ece4; --ink2:#d8d2c8; --ink3:#b0a898; --ink4:#908880; --ink5:#706860;
+  --paper:#1c1c1c; --paper2:#242424; --paper3:#2c2c2c;
+  --rule:#383838; --rule2:#484848;
+  --gold:#d4b060; --gold-bg:#2a2210; --gold-border:#d4b060;
+  --red:#f08070; --red-bg:#2c1a1a;
+  --amber:#e09840; --amber-bg:#2c2010;
+  --green:#60b880; --green-bg:#102818;
+  --blue:#78a0e8; --blue-bg:#101828;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);min-height:100vh;}
+
+/* ── NAV ── */
+nav{background:#141414;border-bottom:2px solid var(--gold-border);display:flex;align-items:center;padding:0;height:38px;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:var(--serif);font-size:13px;color:#f0ead8;padding:0 18px;border-right:1px solid rgba(255,255,255,0.1);height:100%;display:flex;align-items:center;white-space:nowrap;letter-spacing:0.3px;}
+.nav-links{display:flex;height:100%;}
+.nav-link{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,0.4);text-decoration:none;padding:0 16px;height:100%;display:flex;align-items:center;border-right:1px solid rgba(255,255,255,0.06);transition:color 0.15s,background 0.15s;}
+.nav-link:hover{color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.04);}
+.nav-link.active{color:var(--gold-border);border-bottom:2px solid var(--gold-border);margin-bottom:-2px;}
+.nav-right{margin-left:auto;padding:0 14px;display:flex;align-items:center;gap:10px;}
+.dark-toggle{background:none;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.45);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:4px 10px;cursor:pointer;}
+.dark-toggle:hover{border-color:rgba(255,255,255,0.4);color:rgba(255,255,255,0.8);}
+body.dark .dark-toggle{border-color:rgba(212,175,90,0.4);color:var(--gold-border);}
+
+/* ── HEADER ── */
+header{background:#141414;color:#f0ead8;border-bottom:1px solid rgba(255,255,255,0.08);padding:20px 28px 16px;}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;}
+.logo-main{font-family:var(--serif);font-size:22px;letter-spacing:-0.3px;}
+.logo-sub{font-family:var(--mono);font-size:10px;color:var(--gold-border);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+.hdr-stats{display:flex;gap:0;margin-top:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;}
+.hstat{padding:0 22px 0 0;margin-right:22px;border-right:1px solid rgba(255,255,255,0.08);}
+.hstat:last-child{border-right:none;}
+.hstat-n{font-family:var(--mono);font-size:20px;font-weight:500;color:#f0ead8;line-height:1;}
+.hstat-l{font-family:var(--mono);font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:3px;}
+.hstat-n.red{color:#f87171;} .hstat-n.amber{color:#fbbf24;} .hstat-n.green{color:#4ade80;}
+
+/* ── LAYOUT ── */
+.layout{display:flex;min-height:calc(100vh - 38px - 110px);}
+.sidebar{width:300px;flex-shrink:0;border-right:1px solid var(--rule);background:var(--paper2);overflow-y:auto;}
+body.dark .sidebar{background:#242424;border-right-color:#363636;}
+.main-area{flex:1;overflow-y:auto;}
+
+/* ── SIDEBAR WRITER LIST ── */
+.sb-search{padding:12px;border-bottom:1px solid var(--rule);}
+body.dark .sb-search{border-bottom-color:#363636;}
+.sb-search input{
+  width:100%;font-family:var(--mono);font-size:11px;padding:7px 10px;
+  border:1px solid var(--rule2);background:var(--paper);color:var(--ink);outline:none;
+}
+.sb-search input:focus{border-color:var(--gold-border);}
+body.dark .sb-search input{background:#2c2c2c;border-color:#404040;color:var(--ink);}
+.sb-filters{padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--rule);}
+body.dark .sb-filters{border-bottom-color:#363636;}
+.sb-pill{font-family:var(--mono);font-size:8px;letter-spacing:0.8px;padding:4px 10px;border:1px solid var(--rule2);background:none;color:var(--ink3);cursor:pointer;}
+.sb-pill.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+body.dark .sb-pill{border-color:#484848;color:var(--ink3);}
+body.dark .sb-pill.on{background:#444;color:var(--gold-border);border-color:#666;}
+.writer-list{padding:6px 0;}
+.writer-row{
+  padding:9px 14px;border-bottom:1px solid var(--rule);cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;transition:background 0.1s;
+  border-left:3px solid transparent;
+}
+body.dark .writer-row{border-bottom-color:#363636;}
+.writer-row:hover{background:var(--gold-bg);}
+body.dark .writer-row:hover{background:#2c2810;}
+.writer-row.selected{background:var(--gold-bg);border-left-color:var(--gold-border);}
+body.dark .writer-row.selected{background:#2c2810;border-left-color:var(--gold-border);}
+.wr-name{font-family:var(--sans);font-size:11px;color:var(--ink);font-weight:500;}
+.wr-alias{font-family:var(--mono);font-size:8px;color:var(--gold);margin-top:1px;}
+.wr-audit{display:flex;align-items:center;gap:5px;}
+.audit-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dot-green{background:var(--green);} .dot-amber{background:var(--amber);} .dot-red{background:var(--red);}
+.wr-days{font-family:var(--mono);font-size:8px;color:var(--ink4);}
+
+/* ── MAIN AUDIT PANEL ── */
+.audit-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:400px;color:var(--ink4);font-family:var(--mono);font-size:11px;gap:8px;
+}
+.audit-empty-icon{font-size:32px;opacity:0.3;}
+
+.audit-panel{padding:28px 32px;}
+.ap-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;}
+.ap-name{font-family:var(--serif);font-size:28px;color:var(--ink);}
+.ap-alias{font-family:var(--mono);font-size:10px;color:var(--gold);margin-top:4px;letter-spacing:0.5px;}
+.ap-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.ap-link{
+  font-family:var(--mono);font-size:9px;padding:5px 12px;
+  border:1px solid;text-decoration:none;display:inline-flex;align-items:center;gap:5px;
+}
+.ap-link-muso{color:var(--blue);border-color:rgba(26,61,123,0.3);background:var(--blue-bg);}
+.ap-link-genius{color:#7a6600;border-color:#e0c800;background:#fffde0;}
+body.dark .ap-link-genius{color:#e8d840;border-color:#d4c000;background:#2a2a00;}
+
+/* Audit timeline */
+.audit-timeline{display:flex;flex-direction:column;gap:0;margin-bottom:28px;}
+.timeline-item{
+  display:flex;align-items:flex-start;gap:14px;padding:14px 0;
+  border-bottom:1px solid var(--rule);
+}
+body.dark .timeline-item{border-bottom-color:#363636;}
+.timeline-item:last-child{border-bottom:none;}
+.tl-icon{
+  width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;margin-top:2px;
+}
+.tl-green{background:var(--green-bg);color:var(--green);}
+.tl-amber{background:var(--amber-bg);color:var(--amber);}
+.tl-red{background:var(--red-bg);color:var(--red);}
+.tl-gray{background:var(--paper3);color:var(--ink4);}
+.tl-body{flex:1;}
+.tl-label{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:3px;}
+.tl-value{font-family:var(--sans);font-size:14px;color:var(--ink);font-weight:500;}
+.tl-sub{font-family:var(--mono);font-size:9px;color:var(--ink4);margin-top:2px;}
+.tl-action{margin-top:8px;}
+.tl-date-row{display:flex;gap:6px;align-items:center;}
+.tl-date-input{font-family:var(--mono);font-size:10px;padding:5px 8px;border:1px solid var(--rule2);background:var(--paper);color:var(--ink);outline:none;}
+.tl-date-input:focus{border-color:var(--gold-border);}
+body.dark .tl-date-input{background:#2c2c2c;border-color:#484848;color:var(--ink);}
+.tl-save-btn{font-family:var(--mono);font-size:9px;padding:5px 12px;background:var(--green-bg);color:var(--green);border:1px solid rgba(26,92,53,0.3);cursor:pointer;}
+body.dark .tl-save-btn{background:var(--green-bg);color:var(--green);border-color:rgba(96,184,128,0.3);}
+.tl-today-btn{font-family:var(--mono);font-size:9px;padding:5px 10px;background:var(--gold-bg);color:var(--gold);border:1px solid rgba(139,105,20,0.3);cursor:pointer;}
+
+/* Catalog section */
+.catalog-section{background:var(--paper2);border:1px solid var(--rule);padding:20px;margin-bottom:22px;}
+body.dark .catalog-section{background:#242424;border-color:#363636;}
+.cs-title{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:14px;}
+.cs-checks{display:flex;flex-direction:column;gap:10px;}
+.cs-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--rule);background:var(--paper);}
+body.dark .cs-row{background:#2c2c2c;border-color:#404040;}
+.cs-label{font-family:var(--sans);font-size:12px;color:var(--ink2);}
+.cs-status{display:flex;align-items:center;gap:8px;}
+.cs-badge{font-family:var(--mono);font-size:8px;letter-spacing:0.8px;padding:3px 8px;border:1px solid;}
+.cs-ok{color:var(--green);border-color:rgba(26,92,53,0.3);background:var(--green-bg);}
+.cs-warn{color:var(--amber);border-color:rgba(160,87,10,0.3);background:var(--amber-bg);}
+.cs-flag{color:var(--red);border-color:rgba(192,57,43,0.3);background:var(--red-bg);}
+body.dark .cs-ok{color:var(--green);background:var(--green-bg);}
+body.dark .cs-warn{color:var(--amber);background:var(--amber-bg);}
+body.dark .cs-flag{color:var(--red);background:var(--red-bg);}
+
+/* Flag section */
+.flags-section{display:flex;flex-direction:column;gap:8px;margin-bottom:22px;}
+.flag-item{
+  display:flex;align-items:center;gap:12px;padding:10px 14px;
+  border:1px solid var(--rule);background:var(--paper2);
+}
+body.dark .flag-item{background:#242424;border-color:#363636;}
+.flag-item.flagged{background:var(--red-bg);border-color:rgba(192,57,43,0.25);border-left:3px solid var(--red);}
+.flag-item.warned{background:var(--amber-bg);border-color:rgba(160,87,10,0.25);border-left:3px solid var(--amber);}
+body.dark .flag-item.flagged{background:var(--red-bg);}
+body.dark .flag-item.warned{background:var(--amber-bg);}
+.flag-icon{font-size:14px;flex-shrink:0;}
+.flag-text{flex:1;font-family:var(--sans);font-size:12px;color:var(--ink2);}
+.flag-text strong{color:var(--ink);font-weight:600;}
+.toggle-check{display:flex;align-items:center;gap:6px;}
+.tck{display:inline-flex;align-items:center;cursor:pointer;}
+.tck input{display:none;}
+.tck-circle{
+  width:18px;height:18px;border-radius:50%;border:1.5px solid var(--rule2);
+  background:var(--paper);display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:transparent;transition:all 0.15s;
+}
+.tck input:checked+.tck-circle{background:var(--green);border-color:var(--green);color:#fff;}
+body.dark .tck-circle{background:#2a2a2a;border-color:#555;}
+body.dark .tck input:checked+.tck-circle{background:var(--green);border-color:var(--green);}
+
+/* Notes */
+.notes-section{margin-bottom:22px;}
+.notes-label{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;}
+.notes-textarea{
+  width:100%;font-family:var(--sans);font-size:12px;color:var(--ink);
+  background:var(--paper);border:1px solid var(--rule2);padding:10px;
+  resize:vertical;min-height:80px;outline:none;
+}
+.notes-textarea:focus{border-color:var(--gold-border);}
+body.dark .notes-textarea{background:#2c2c2c;border-color:#484848;color:var(--ink);}
+.save-notes-btn{font-family:var(--mono);font-size:9px;padding:6px 14px;background:var(--green-bg);color:var(--green);border:1px solid rgba(26,92,53,0.3);cursor:pointer;margin-top:6px;}
+body.dark .save-notes-btn{background:var(--green-bg);color:var(--green);border-color:rgba(96,184,128,0.3);}
+
+/* Admin tag */
+.admin-tag{
+  font-family:var(--mono);font-size:8px;letter-spacing:1px;text-transform:uppercase;
+  padding:3px 10px;border:1px solid;display:inline-block;
+}
+.at-empire{color:#c9931a;border-color:rgba(201,147,26,0.4);background:rgba(201,147,26,0.08);}
+.at-kobalt{color:#4a72b8;border-color:rgba(74,114,184,0.4);background:rgba(74,114,184,0.08);}
+.at-songsplits{color:#b0980a;border-color:rgba(176,152,10,0.4);background:rgba(176,152,10,0.08);}
+
+/* Toast */
+.toast-wrap{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:300;}
+.toast{background:var(--paper);border:1px solid var(--rule);box-shadow:var(--shadow);padding:10px 14px;display:flex;align-items:flex-start;gap:10px;min-width:240px;font-family:var(--sans);font-size:12px;}
+body.dark .toast{background:#2c2c2c;border-color:#484848;color:var(--ink);}
+.toast-ico{color:var(--green);font-size:14px;margin-top:1px;}
+.toast-title{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--gold-border);margin-bottom:2px;}
+.toast-msg{color:var(--ink3);}
+</style>
+</head>
+<body>
+
+<style>
+.paq-nav{background:#141414;border-bottom:2px solid #d4af5a;display:flex;align-items:center;height:38px;position:sticky;top:0;z-index:200;padding:0 6px;gap:0;}
+.paq-nav-btn{
+  display:flex;align-items:center;justify-content:center;
+  text-decoration:none;padding:0 13px;height:100%;
+  border:none;background:none;cursor:pointer;
+  transition:opacity 0.15s;
+}
+.paq-nav:hover .paq-nav-btn svg{ opacity:0.25; }
+.paq-nav-btn:hover svg{ opacity:1 !important; }
+.paq-nav-btn.active svg{ opacity:1 !important; }
+.paq-nav-ico{display:flex;align-items:center;justify-content:center;}
+.paq-nav-btn svg{ opacity:0.55; transition:opacity 0.15s; }
+</style>
+<nav class="paq-nav">
+  <a href="index.html" class="paq-nav-btn " title="Roster">
+    <span class="paq-nav-ico" style="color:#d4af5a"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="6" height="6" rx="0.5"/><rect x="10" y="2" width="6" height="6" rx="0.5"/><rect x="2" y="10" width="6" height="6" rx="0.5"/><rect x="10" y="10" width="6" height="6" rx="0.5"/></svg></span>
+  </a>
+  <a href="prospects.html" class="paq-nav-btn " title="Prospects">
+    <span class="paq-nav-ico" style="color:#5aab78"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="6" r="3"/><path d="M3 15c0-3.314 2.686-5 6-5s6 1.686 6 5"/><line x1="13" y1="3" x2="13" y2="7"/><line x1="11" y1="5" x2="15" y2="5"/></svg></span>
+  </a>
+  <a href="audit.html" class="paq-nav-btn active" title="Audit Check">
+    <span class="paq-nav-ico" style="color:#5b8fd4"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5"/><line x1="12" y1="12" x2="16" y2="16"/></svg></span>
+  </a>
+</nav>
+
+
+
+<header>
+  <div class="hdr-top">
+    <div>
+      <div class="logo-main">Audit Check</div>
+      <div class="logo-sub">Catalog Research &amp; Compliance</div>
+    </div>
+  </div>
+  <div class="hdr-stats">
+    <div class="hstat"><div class="hstat-n" id="stat-total">—</div><div class="hstat-l">Total Writers</div></div>
+    <div class="hstat"><div class="hstat-n red" id="stat-overdue">—</div><div class="hstat-l">Overdue (&gt;12mo)</div></div>
+    <div class="hstat"><div class="hstat-n amber" id="stat-attn">—</div><div class="hstat-l">Needs Attention</div></div>
+    <div class="hstat"><div class="hstat-n green" id="stat-ok">—</div><div class="hstat-l">Up to Date</div></div>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sb-search">
+      <input type="text" id="sb-search" placeholder="Search writers…" oninput="filterList(this.value)">
+    </div>
+    <div class="sb-filters">
+      <button class="sb-pill on" id="pill-all" onclick="setListFilter('all')">All</button>
+      <button class="sb-pill" id="pill-overdue" onclick="setListFilter('overdue')">Overdue</button>
+      <button class="sb-pill" id="pill-attn" onclick="setListFilter('attn')">Attention</button>
+      <button class="sb-pill" id="pill-ok" onclick="setListFilter('ok')">Up to Date</button>
+    </div>
+    <div class="writer-list" id="writer-list"></div>
+  </div>
+
+  <div class="main-area" id="main-area">
+    <div class="audit-empty" id="audit-empty">
+      <div class="audit-empty-icon">◎</div>
+      <div>Select a writer to review their audit</div>
+    </div>
+    <div class="audit-panel" id="audit-panel" style="display:none"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+const SB_URL = 'https://jbcqoxiygkdxoaulrhbk.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiY3FveGl5Z2tkeG9hdWxyaGJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyOTA1MDQsImV4cCI6MjA4ODg2NjUwNH0.IPB_7u7hU53aUI6wS-fYXLOe3_7uCAjMhDwXxQZR4s8';
+const SB_HEADERS = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`};
+const TODAY_STR = new Date().toISOString().split('T')[0];
+
+let writers = [];
+let selectedId = null;
+let listFilter = 'all';
+let searchQ = '';
+
+async function sbFetch(path, opts={}){
+  const res = await fetch(`${SB_URL}/rest/v1/${path}`,{headers:SB_HEADERS,...opts});
+  if(!res.ok){const e=await res.text();throw new Error(e);}
+  return res.status===204?null:res.json();
+}
+
+async function dbLoad(){
+  showLoader(true);
+  try{
+    const rows = await sbFetch('writers?select=id,data&order=id');
+    if(rows&&rows.length>0){
+      writers = rows.map(r=>({id:r.id,...r.data}));
+    }
+  }catch(e){
+    console.error('Load failed:',e);
+    toast('Offline','Could not load from database.');
+  }
+  showLoader(false);
+  renderStats();
+  renderList();
+}
+
+async function dbSave(w){
+  try{
+    await sbFetch('writers',{
+      method:'POST',
+      headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({id:w.id,data:w})
+    });
+  }catch(e){toast('Save Error','Change may not have saved.');}
+}
+
+function showLoader(on){
+  let el=document.getElementById('db-loader');
+  if(!el){el=document.createElement('div');el.id='db-loader';el.style.cssText='position:fixed;top:38px;left:0;right:0;height:3px;background:linear-gradient(90deg,#c9931a,#4a72b8,#b0980a);z-index:999;transition:opacity .3s';document.body.prepend(el);}
+  el.style.opacity=on?'1':'0';
+}
+
+function mths(d){
+  if(!d) return 999;
+  const dt=new Date(d+'T00:00:00');
+  const now=new Date();
+  return (now.getFullYear()-dt.getFullYear())*12+(now.getMonth()-dt.getMonth());
+}
+
+function auditStatus(w){
+  const d=w.auditCompleted||w.auditSent;
+  if(!d) return 'overdue';
+  const m=mths(d);
+  if(m<6) return 'ok';
+  if(m<12) return 'attn';
+  return 'overdue';
+}
+
+function fmtDate(d){
+  if(!d) return '—';
+  return new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function agoStr(d){
+  if(!d) return 'Never';
+  const m=mths(d);
+  if(m===0) return 'This month';
+  if(m===1) return '1 month ago';
+  return `${m} months ago`;
+}
+
+function renderStats(){
+  document.getElementById('stat-total').textContent=writers.length;
+  document.getElementById('stat-overdue').textContent=writers.filter(w=>auditStatus(w)==='overdue').length;
+  document.getElementById('stat-attn').textContent=writers.filter(w=>auditStatus(w)==='attn').length;
+  document.getElementById('stat-ok').textContent=writers.filter(w=>auditStatus(w)==='ok').length;
+}
+
+function getListWriters(){
+  let d=[...writers];
+  if(searchQ) d=d.filter(w=>(w.name+' '+(w.alias||'')).toLowerCase().includes(searchQ));
+  if(listFilter==='overdue') d=d.filter(w=>auditStatus(w)==='overdue');
+  if(listFilter==='attn') d=d.filter(w=>auditStatus(w)==='attn');
+  if(listFilter==='ok') d=d.filter(w=>auditStatus(w)==='ok');
+  // Sort: overdue first, then attn, then ok; then alpha within group
+  const rank={overdue:0,attn:1,ok:2};
+  d.sort((a,b)=>{
+    const ra=rank[auditStatus(a)], rb=rank[auditStatus(b)];
+    return ra!==rb?ra-rb:a.name.localeCompare(b.name);
+  });
+  return d;
+}
+
+function renderList(){
+  const d=getListWriters();
+  const wrap=document.getElementById('writer-list');
+  wrap.innerHTML=d.map(w=>{
+    const st=auditStatus(w);
+    const dotCls=st==='ok'?'dot-green':st==='attn'?'dot-amber':'dot-red';
+    const auditDate=w.auditCompleted||w.auditSent;
+    const m=mths(auditDate);
+    const daysStr=auditDate?(m===0?'<1 mo':m===1?'1 mo':`${m} mo`):'No audit';
+    return `<div class="writer-row${selectedId===w.id?' selected':''}" onclick="selectWriter(${w.id})">
+      <div>
+        <div class="wr-name">${w.name}</div>
+        ${w.alias?`<div class="wr-alias">pka ${w.alias}</div>`:''}
+      </div>
+      <div class="wr-audit">
+        <div class="audit-dot ${dotCls}"></div>
+        <span class="wr-days">${daysStr}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setListFilter(f){
+  listFilter=f;
+  ['all','overdue','attn','ok'].forEach(k=>{
+    document.getElementById('pill-'+k).classList.toggle('on',k===f);
+  });
+  renderList();
+}
+
+function filterList(v){
+  searchQ=v.toLowerCase();
+  renderList();
+}
+
+function selectWriter(id){
+  selectedId=id;
+  renderList();
+  renderAuditPanel();
+}
+
+function renderAuditPanel(){
+  const w=writers.find(x=>x.id===selectedId);
+  if(!w){document.getElementById('audit-empty').style.display='flex';document.getElementById('audit-panel').style.display='none';return;}
+  document.getElementById('audit-empty').style.display='none';
+  document.getElementById('audit-panel').style.display='block';
+
+  const st=auditStatus(w);
+  const auditDate=w.auditCompleted||w.auditSent;
+  const m=mths(auditDate);
+
+  // Audit status color
+  const stColor=st==='ok'?'var(--green)':st==='attn'?'var(--amber)':'var(--red)';
+  const stLabel=st==='ok'?'Up to Date':st==='attn'?'Needs Attention':'Overdue';
+  const stIconCls=st==='ok'?'tl-green':st==='attn'?'tl-amber':'tl-red';
+  const stIcon=st==='ok'?'✓':st==='attn'?'⚠':'✗';
+
+  // Admin color
+  const adminTagCls=w.admin==='Empire'?'at-empire':w.admin==='Kobalt'?'at-kobalt':'at-songsplits';
+
+  // Flags
+  const flags=[];
+  if(!auditDate) flags.push({cls:'flagged',icon:'✗',text:'<strong>No audit on record</strong> — this writer has never been audited.'});
+  else if(m>=12) flags.push({cls:'flagged',icon:'✗',text:`<strong>Overdue by ${m-12>0?m-12+' months':' this month'}</strong> — last audit was ${agoStr(auditDate)}.`});
+  else if(m>=6) flags.push({cls:'warned',icon:'⚠',text:`<strong>Audit due soon</strong> — last audit was ${agoStr(auditDate)}. Schedule before ${m>=10?'next month':'end of year'}.`});
+  if(!w.scheduleA) flags.push({cls:'flagged',icon:'✗',text:'<strong>No Schedule A on file</strong> — contract document missing.'});
+  if(w.splitsMissing) flags.push({cls:'warned',icon:'⚠',text:`<strong>Splits missing</strong> — ${w.splitsOutreach?'outreach sent, awaiting update':'writer not yet contacted'}.`});
+  if(w.catalogNeedsUpdate) flags.push({cls:'warned',icon:'⚠',text:'<strong>Catalog needs update</strong> — check muso.ai and Genius for new registrations.'});
+  if(!w.ipi) flags.push({cls:'warned',icon:'⚠',text:'<strong>No IPI number on record</strong> — needed for PRO registration verification.'});
+
+  // Catalog checks
+  const catalogChecks = [
+    {label:'muso.ai profile linked', ok:!!w.musoUrl, warnMsg:'Link muso.ai profile to track catalog'},
+    {label:'Genius profile linked', ok:!!w.geniusUrl, warnMsg:'Link Genius profile for lyric verification'},
+    {label:'IPI # on record', ok:!!w.ipi, warnMsg:'Add IPI number for PRO verification'},
+    {label:'Schedule A on file', ok:!!w.scheduleA, warnMsg:'No contract date — add Schedule A'},
+    {label:'Splits accounted for', ok:!w.splitsMissing, warnMsg:'Splits flagged as missing'},
+    {label:'PRO registered', ok:!!w.pro, warnMsg:'No PRO affiliation on record'},
+  ];
+
+  const panel=document.getElementById('audit-panel');
+  panel.innerHTML=`
+    <div class="ap-hdr">
+      <div>
+        <div class="ap-name">${w.name}</div>
+        ${w.alias?`<div class="ap-alias">pka ${w.alias}</div>`:''}
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+          <span class="admin-tag ${adminTagCls}">${w.admin}</span>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--ink4)">${w.company}</span>
+          ${w.pro?`<span style="font-family:var(--mono);font-size:9px;background:var(--paper3);color:var(--ink3);padding:2px 8px;border:1px solid var(--rule2)">${w.pro}</span>`:''}
+          <span style="font-family:var(--mono);font-size:9px;padding:2px 8px;border:1px solid;color:${stColor};border-color:${stColor}30;background:${stColor}10">${stLabel}</span>
+        </div>
+        <div class="ap-links">
+          ${w.musoUrl?`<a href="${w.musoUrl}" target="_blank" class="ap-link ap-link-muso">♫ muso.ai →</a>`:''}
+          ${w.geniusUrl?`<a href="${w.geniusUrl}" target="_blank" class="ap-link ap-link-genius">✦ Genius →</a>`:''}
+        </div>
+      </div>
+    </div>
+
+    ${flags.length?`
+    <div style="margin-bottom:22px;">
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;">Flags</div>
+      <div class="flags-section">
+        ${flags.map(f=>`<div class="flag-item ${f.cls}"><span class="flag-icon">${f.icon}</span><span class="flag-text">${f.text}</span></div>`).join('')}
+      </div>
+    </div>`:'<div style="margin-bottom:20px;padding:12px 16px;background:var(--green-bg);border:1px solid rgba(26,92,53,0.2);border-left:3px solid var(--green);font-family:var(--mono);font-size:10px;color:var(--green)">✓ No flags — this writer is fully compliant.</div>'}
+
+    <div style="margin-bottom:24px;">
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;">Audit Timeline</div>
+      <div class="audit-timeline">
+        <div class="timeline-item">
+          <div class="tl-icon ${stIconCls}">${stIcon}</div>
+          <div class="tl-body">
+            <div class="tl-label">Audit Completed</div>
+            <div class="tl-value" style="color:${stColor}">${fmtDate(w.auditCompleted||w.auditSent)}</div>
+            <div class="tl-sub">${agoStr(w.auditCompleted||w.auditSent)}${auditDate&&m<12?' — '+Math.max(0,12-m)+' months until due':auditDate?' — overdue':''}</div>
+            <div class="tl-action">
+              <div class="tl-date-row">
+                <input class="tl-date-input" type="date" id="tl-auditComp" value="${w.auditCompleted||''}" max="${TODAY_STR}">
+                <button class="tl-today-btn" onclick="document.getElementById('tl-auditComp').value='${TODAY_STR}'">Today</button>
+                <button class="tl-save-btn" onclick="saveAuditField(${w.id},'auditCompleted','tl-auditComp')">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-icon ${w.auditSent?'tl-green':'tl-gray'}">${w.auditSent?'✓':'○'}</div>
+          <div class="tl-body">
+            <div class="tl-label">Sent to Company</div>
+            <div class="tl-value">${fmtDate(w.auditSent)}</div>
+            <div class="tl-sub">${w.auditSent?agoStr(w.auditSent):'Not sent yet'}</div>
+            <div class="tl-action">
+              <div class="tl-date-row">
+                <input class="tl-date-input" type="date" id="tl-auditSent" value="${w.auditSent||''}" max="${TODAY_STR}">
+                <button class="tl-today-btn" onclick="document.getElementById('tl-auditSent').value='${TODAY_STR}'">Today</button>
+                <button class="tl-save-btn" onclick="saveAuditField(${w.id},'auditSent','tl-auditSent')">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-icon ${w.scheduleA?'tl-green':'tl-red'}">${w.scheduleA?'✓':'✗'}</div>
+          <div class="tl-body">
+            <div class="tl-label">Schedule A</div>
+            <div class="tl-value">${fmtDate(w.scheduleA)}</div>
+            <div class="tl-sub">${w.scheduleA?agoStr(w.scheduleA):'No contract date on record'}</div>
+            <div class="tl-action">
+              <div class="tl-date-row">
+                <input class="tl-date-input" type="date" id="tl-schedA" value="${w.scheduleA||''}" max="${TODAY_STR}">
+                <button class="tl-today-btn" onclick="document.getElementById('tl-schedA').value='${TODAY_STR}'">Today</button>
+                <button class="tl-save-btn" onclick="saveAuditField(${w.id},'scheduleA','tl-schedA')">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="catalog-section">
+      <div class="cs-title">Catalog Checklist</div>
+      <div class="cs-checks">
+        ${catalogChecks.map(c=>`<div class="cs-row">
+          <span class="cs-label">${c.label}</span>
+          <div class="cs-status">
+            ${c.ok
+              ?`<span class="cs-badge cs-ok">✓ OK</span>`
+              :`<span class="cs-badge cs-flag">✗ Missing</span><span style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-left:4px">${c.warnMsg}</span>`
+            }
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="notes-section">
+      <div class="notes-label">Audit Notes</div>
+      <textarea class="notes-textarea" id="audit-notes-${w.id}" placeholder="Research notes, observations, follow-up items…">${w.auditNotes||''}</textarea>
+      <button class="save-notes-btn" onclick="saveAuditNotes(${w.id})">Save Notes</button>
+    </div>`;
+}
+
+async function saveAuditField(id, field, inputId){
+  const val=document.getElementById(inputId)?.value;
+  if(!val){toast('No Date','Pick a date first.');return;}
+  const w=writers.find(x=>x.id===id);
+  w[field]=val;
+  toast('Saved',`${field==='auditCompleted'?'Audit date':field==='auditSent'?'Sent date':'Schedule A'} updated for ${w.name}.`);
+  renderStats();
+  renderList();
+  renderAuditPanel();
+  await dbSave(w);
+}
+
+async function saveAuditNotes(id){
+  const w=writers.find(x=>x.id===id);
+  w.auditNotes=document.getElementById(`audit-notes-${id}`)?.value||'';
+  toast('Notes Saved',`Audit notes updated for ${w.name}.`);
+  await dbSave(w);
+}
+
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  localStorage.setItem('paq-dark',document.body.classList.contains('dark')?'1':'0');
+}
+if(localStorage.getItem('paq-dark')==='1') document.body.classList.add('dark');
+
+function toast(title,msg){
+  const el=document.createElement('div');el.className='toast';
+  el.innerHTML=`<div class="toast-ico">✓</div><div><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>`;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),350);},4000);
+}
+
+dbLoad();
+</script>
+</body>
+</html>

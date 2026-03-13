@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAQ Publishing — Prospects</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #141414; --ink2: #2d2d2d; --ink3: #555; --ink4: #888; --ink5: #bbb;
+  --paper: #f4f1eb; --paper2: #ede9e1; --paper3: #e5e0d7;
+  --rule: #d8d2c8; --rule2: #c8c1b5;
+  --gold: #8b6914; --gold-bg: #f7f0de; --gold-border: #d4af5a;
+  --red: #c0392b; --red-bg: #fdf0ee;
+  --amber: #a0570a; --amber-bg: #fdf4e7;
+  --green: #1a5c35; --green-bg: #e8f5ee;
+  --blue: #1a3d7b; --blue-bg: #e8eef8;
+  --purple: #5a2d8a; --purple-bg: #f0eaf8;
+  --serif: 'DM Serif Display', serif;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+body.dark {
+  --ink:#f0ece4; --ink2:#d8d2c8; --ink3:#b0a898; --ink4:#908880; --ink5:#706860;
+  --paper:#1c1c1c; --paper2:#242424; --paper3:#2c2c2c;
+  --rule:#383838; --rule2:#484848;
+  --gold:#d4b060; --gold-bg:#2a2210; --gold-border:#d4b060;
+  --red:#f08070; --red-bg:#2c1a1a;
+  --amber:#e09840; --amber-bg:#2c2010;
+  --green:#60b880; --green-bg:#102818;
+  --blue:#78a0e8; --blue-bg:#101828;
+  --purple:#a880e8; --purple-bg:#1c1430;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);min-height:100vh;}
+
+/* ── NAV ── */
+nav {
+  background:#141414;
+  border-bottom: 2px solid var(--gold-border);
+  display:flex; align-items:center; gap:0;
+  padding:0; height:38px; position:sticky; top:0; z-index:100;
+}
+.nav-logo {
+  font-family:var(--serif); font-size:13px; color:#f0ead8;
+  padding:0 18px; border-right:1px solid rgba(255,255,255,0.1);
+  height:100%; display:flex; align-items:center; white-space:nowrap;
+  letter-spacing:0.3px;
+}
+.nav-links { display:flex; height:100%; }
+.nav-link {
+  font-family:var(--mono); font-size:9px; letter-spacing:1.2px; text-transform:uppercase;
+  color:rgba(255,255,255,0.4); text-decoration:none;
+  padding:0 16px; height:100%; display:flex; align-items:center;
+  border-right:1px solid rgba(255,255,255,0.06);
+  transition:color 0.15s, background 0.15s;
+}
+.nav-link:hover{color:rgba(255,255,255,0.8); background:rgba(255,255,255,0.04);}
+.nav-link.active{color:var(--gold-border); border-bottom:2px solid var(--gold-border); margin-bottom:-2px;}
+.nav-right{margin-left:auto; padding:0 14px; display:flex; align-items:center; gap:10px;}
+.dark-toggle{
+  background:none; border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.45);
+  font-family:var(--mono); font-size:9px; letter-spacing:1px; padding:4px 10px; cursor:pointer;
+}
+.dark-toggle:hover{border-color:rgba(255,255,255,0.4);color:rgba(255,255,255,0.8);}
+body.dark .dark-toggle{border-color:rgba(212,175,90,0.4);color:var(--gold-border);}
+
+/* ── HEADER ── */
+header {
+  background:#141414; color:#f0ead8;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  padding:20px 28px 16px;
+}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;}
+.logo-main{font-family:var(--serif);font-size:22px;letter-spacing:-0.3px;}
+.logo-sub{font-family:var(--mono);font-size:10px;color:var(--gold-border);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+.hdr-stats{display:flex;gap:0;margin-top:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;}
+.hstat{padding:0 22px 0 0;margin-right:22px;border-right:1px solid rgba(255,255,255,0.08);}
+.hstat:last-child{border-right:none;}
+.hstat-n{font-family:var(--mono);font-size:20px;font-weight:500;color:#f0ead8;line-height:1;}
+.hstat-l{font-family:var(--mono);font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:3px;}
+.hstat-n.amber{color:#fbbf24;} .hstat-n.green{color:#4ade80;} .hstat-n.red{color:#f87171;}
+
+/* ── TOOLBAR ── */
+.toolbar{
+  background:var(--paper2); border-bottom:1px solid var(--rule);
+  padding:10px 28px; position:sticky; top:38px; z-index:90;
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+body.dark .toolbar{background:#202020; border-bottom-color:#363636;}
+.srch{position:relative;display:flex;align-items:center;}
+.srch-icon{position:absolute;left:9px;font-size:14px;color:var(--ink4);pointer-events:none;}
+.srch input{
+  font-family:var(--mono);font-size:11px;padding:6px 28px 6px 28px;
+  border:1px solid var(--rule2);background:var(--paper);color:var(--ink);width:220px;
+  outline:none;
+}
+.srch input:focus{border-color:var(--gold-border);}
+body.dark .srch input{background:#2c2c2c;border-color:#404040;color:var(--ink);}
+.srch-clear{position:absolute;right:6px;background:none;border:none;cursor:pointer;color:var(--ink4);font-size:12px;padding:2px 4px;display:none;}
+.srch-clear.visible{display:block;}
+.tb-select{
+  font-family:var(--mono);font-size:10px;padding:6px 10px;
+  border:1px solid var(--rule2);background:var(--paper);color:var(--ink);cursor:pointer;
+}
+body.dark select{background:#2c2c2c;border-color:#404040;color:var(--ink2);}
+.add-btn{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.5px;
+  background:var(--ink);color:var(--paper);border:none;padding:7px 16px;cursor:pointer;
+  margin-left:auto;
+}
+.add-btn:hover{background:var(--ink2);}
+body.dark .add-btn{background:#333;color:var(--gold-border);}
+
+/* ── LAYOUT ── */
+.layout{display:flex;min-height:calc(100vh - 38px - 74px - 57px);}
+.main-area{flex:1;padding:24px 28px;overflow-x:auto;}
+
+/* ── PIPELINE VIEW ── */
+.pipeline{display:flex;gap:14px;align-items:flex-start;min-height:400px;}
+.stage-col{
+  flex:0 0 240px; background:var(--paper2); border:1px solid var(--rule);
+  border-top:3px solid var(--rule2);
+}
+body.dark .stage-col{background:#242424;border-color:#363636;}
+.stage-col.stage-new{border-top-color:#78a0e8;}
+.stage-col.stage-research{border-top-color:#a880e8;}
+.stage-col.stage-outreach{border-top-color:#e09840;}
+.stage-col.stage-negotiating{border-top-color:#f08070;}
+.stage-col.stage-signed{border-top-color:#60b880;}
+.stage-col.stage-passed{border-top-color:#606060;}
+.stage-hdr{
+  padding:10px 12px; display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--rule);
+}
+body.dark .stage-hdr{border-bottom-color:#363636;}
+.stage-title{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink3);}
+.stage-count{font-family:var(--mono);font-size:9px;background:var(--paper3);color:var(--ink4);padding:2px 7px;border:1px solid var(--rule);}
+body.dark .stage-count{background:#303030;border-color:#484848;}
+.stage-cards{padding:10px;display:flex;flex-direction:column;gap:8px;min-height:60px;}
+
+/* ── PROSPECT CARD ── */
+.pcard{
+  background:var(--paper);border:1px solid var(--rule);
+  padding:11px 12px; cursor:pointer; transition:all 0.12s;
+  border-left:3px solid transparent;
+}
+body.dark .pcard{background:#2a2a2a;border-color:#404040;}
+.pcard:hover{transform:translateY(-1px);box-shadow:var(--shadow);}
+.pcard.priority-high{border-left-color:var(--red);}
+.pcard.priority-med{border-left-color:var(--amber);}
+.pcard.priority-low{border-left-color:var(--green);}
+.pcard-name{font-family:var(--serif);font-size:13px;color:var(--ink);margin-bottom:2px;}
+body.dark .pcard-name{color:var(--ink);}
+.pcard-alias{font-family:var(--mono);font-size:9px;color:var(--gold);margin-bottom:6px;}
+.pcard-meta{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
+.ptag{
+  font-family:var(--mono);font-size:8px;padding:2px 6px;
+  border:1px solid var(--rule2);color:var(--ink3);background:var(--paper2);
+}
+body.dark .ptag{background:#333;border-color:#484848;color:var(--ink3);}
+.ptag.pro-bmi{background:var(--bmi-bg,#e8eef8);color:#1a4b8c;border-color:#93b0d8;}
+.ptag.pro-ascap{background:#f8ebe8;color:#7b2d2d;border-color:#d8a090;}
+.ptag.pro-sesac{background:#e8f3ec;color:#2d5c3f;border-color:#90c0a0;}
+.ptag.genre{background:var(--paper3);color:var(--ink3);}
+body.dark .ptag.genre{background:#303030;color:var(--ink3);}
+.pcard-streams{font-family:var(--mono);font-size:8px;color:var(--ink4);display:flex;gap:8px;margin-top:4px;}
+.stream-n{color:var(--ink3);font-weight:500;}
+.pcard-date{font-family:var(--mono);font-size:8px;color:var(--ink5);margin-top:4px;}
+
+/* ── LIST VIEW ── */
+.list-view{display:none;}
+.list-view.active{display:block;}
+.pipeline-view.hidden{display:none;}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--rule);background:var(--paper2);}
+body.dark .tbl-wrap{background:var(--paper2);border-color:#363636;}
+table{width:100%;border-collapse:collapse;font-size:11px;}
+thead tr{background:var(--paper3);border-bottom:2px solid var(--rule2);}
+th{
+  font-family:var(--mono);font-size:8px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--ink3);padding:10px 12px;text-align:left;white-space:nowrap;
+  border-right:1px solid var(--rule);
+}
+body.dark thead tr{background:#1a1a1a;}
+body.dark th{color:rgba(255,255,255,0.4);border-right-color:rgba(255,255,255,0.05);}
+tbody tr{border-bottom:1px solid var(--rule);cursor:pointer;transition:background 0.1s;}
+tbody tr:hover{background:var(--gold-bg)!important;}
+body.dark tbody tr{background:var(--paper2);border-bottom-color:var(--rule);}
+body.dark tbody tr:hover{background:#343434!important;}
+td{padding:9px 12px;color:var(--ink2);border-right:1px solid var(--rule);vertical-align:middle;}
+body.dark td{color:var(--ink2);border-right-color:var(--rule);}
+.td-name{font-family:var(--serif);font-size:12px;color:var(--ink);}
+.td-alias{font-family:var(--mono);font-size:9px;color:var(--gold);}
+
+/* Stage badge */
+.stage-badge{
+  font-family:var(--mono);font-size:8px;letter-spacing:0.8px;text-transform:uppercase;
+  padding:3px 8px;border:1px solid;white-space:nowrap;
+}
+.sb-new{color:#78a0e8;border-color:rgba(120,160,232,0.4);background:rgba(120,160,232,0.08);}
+.sb-research{color:#a880e8;border-color:rgba(168,128,232,0.4);background:rgba(168,128,232,0.08);}
+.sb-outreach{color:var(--amber);border-color:rgba(160,87,10,0.3);background:var(--amber-bg);}
+.sb-negotiating{color:var(--red);border-color:rgba(192,57,43,0.3);background:var(--red-bg);}
+.sb-signed{color:var(--green);border-color:rgba(26,92,53,0.3);background:var(--green-bg);}
+.sb-passed{color:var(--ink4);border-color:var(--rule2);background:var(--paper3);}
+body.dark .sb-new{color:#78a0e8;border-color:rgba(120,160,232,0.3);background:rgba(120,160,232,0.1);}
+body.dark .sb-research{color:#a880e8;border-color:rgba(168,128,232,0.3);background:rgba(168,128,232,0.1);}
+body.dark .sb-outreach{color:var(--amber);border-color:rgba(224,152,64,0.3);background:var(--amber-bg);}
+body.dark .sb-negotiating{color:var(--red);border-color:rgba(240,128,112,0.3);background:var(--red-bg);}
+body.dark .sb-signed{color:var(--green);border-color:rgba(96,184,128,0.3);background:var(--green-bg);}
+body.dark .sb-passed{color:var(--ink4);border-color:#484848;background:#2c2c2c;}
+
+/* Priority dot */
+.pri-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;}
+.pri-high{background:var(--red);}
+.pri-med{background:var(--amber);}
+.pri-low{background:var(--green);}
+
+/* View toggle */
+.view-toggle{display:flex;border:1px solid var(--rule2);overflow:hidden;margin-left:8px;}
+.vtb{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.8px;padding:5px 12px;
+  background:none;border:none;cursor:pointer;color:var(--ink3);transition:all 0.1s;
+}
+.vtb.on{background:var(--ink);color:var(--paper);}
+body.dark .view-toggle{background:#2c2c2c;border-color:#404040;}
+body.dark .vtb{color:var(--ink3);}
+body.dark .vtb.on{background:#444;color:var(--gold-border);}
+
+/* ── DETAIL PANEL ── */
+.detail{
+  width:340px;flex-shrink:0;border-left:1px solid var(--rule);
+  background:var(--paper);overflow-y:auto;
+  position:sticky;top:calc(38px + 57px);height:calc(100vh - 38px - 57px - 74px);
+  transform:translateX(340px);transition:transform 0.2s;display:none;
+}
+body.dark .detail{background:#1e1e1e;border-left-color:#363636;}
+.detail.open{transform:translateX(0);display:block;}
+.detail-hdr{
+  background:#141414;padding:16px 18px 14px;
+  border-bottom:2px solid var(--gold-border);position:sticky;top:0;z-index:5;
+}
+#d-name{font-family:var(--serif);font-size:18px;color:#f0ead8;line-height:1.2;}
+#d-alias{font-family:var(--mono);font-size:9px;color:var(--gold-border);margin-top:3px;letter-spacing:0.5px;}
+.d-hdr-actions{display:flex;gap:6px;margin-top:10px;}
+.d-btn{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.5px;padding:5px 12px;
+  border:1px solid;cursor:pointer;background:none;
+}
+.d-btn-edit{color:var(--gold-border);border-color:rgba(212,175,90,0.4);}
+.d-btn-edit:hover{background:rgba(212,175,90,0.1);}
+.d-btn-del{color:#f08070;border-color:rgba(240,128,112,0.3);}
+.d-btn-del:hover{background:rgba(240,128,112,0.1);}
+.d-btn-convert{color:#60b880;border-color:rgba(96,184,128,0.3);}
+.d-btn-convert:hover{background:rgba(96,184,128,0.1);}
+.d-body{padding:14px 16px;}
+.d-sec{padding:12px 0;border-bottom:1px solid var(--rule);}
+body.dark .d-sec{border-bottom-color:#363636;}
+.d-sec:last-child{border-bottom:none;}
+.d-sec-title{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;}
+.d-kv{display:flex;flex-direction:column;gap:6px;}
+.d-k{font-family:var(--mono);font-size:9px;color:var(--ink4);}
+.d-v{font-family:var(--sans);font-size:11px;color:var(--ink2);margin-top:1px;}
+body.dark .d-k{color:var(--ink3);}
+body.dark .d-v{color:var(--ink);}
+.d-note{
+  font-family:var(--sans);font-size:11px;color:var(--ink2);
+  background:var(--paper2);border:1px solid var(--rule);padding:8px 10px;
+  margin-top:6px;line-height:1.5;
+}
+body.dark .d-note{background:#2c2c2c;border-color:#484848;color:var(--ink2);}
+.d-note-empty{color:var(--ink5);font-style:italic;}
+textarea.d-textarea{
+  width:100%;font-family:var(--sans);font-size:11px;color:var(--ink);
+  background:var(--paper);border:1px solid var(--rule2);padding:8px;
+  resize:vertical;min-height:80px;outline:none;margin-top:6px;
+}
+textarea.d-textarea:focus{border-color:var(--gold-border);}
+body.dark textarea.d-textarea{background:#2c2c2c;border-color:#484848;color:var(--ink);}
+.d-save-btn{
+  font-family:var(--mono);font-size:9px;padding:5px 12px;
+  background:var(--green-bg);color:var(--green);border:1px solid rgba(26,92,53,0.3);
+  cursor:pointer;margin-top:6px;
+}
+body.dark .d-save-btn{background:var(--green-bg);color:var(--green);border-color:rgba(96,184,128,0.3);}
+.outreach-list{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
+.outreach-item{
+  background:var(--paper2);border:1px solid var(--rule);
+  padding:8px 10px;font-family:var(--sans);font-size:11px;
+}
+body.dark .outreach-item{background:#2c2c2c;border-color:#404040;}
+.outreach-date{font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:3px;}
+.outreach-text{color:var(--ink2);}
+body.dark .outreach-text{color:var(--ink2);}
+.add-outreach-area{margin-top:8px;}
+.add-outreach-area input[type="date"]{
+  font-family:var(--mono);font-size:10px;padding:5px 8px;
+  border:1px solid var(--rule2);background:var(--paper);color:var(--ink);
+  width:100%;margin-bottom:4px;outline:none;
+}
+body.dark .add-outreach-area input{background:#2c2c2c;border-color:#484848;color:var(--ink);}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;
+  display:none;align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex;}
+body.dark .modal-overlay{background:rgba(0,0,0,0.7);}
+.modal{
+  background:var(--paper);width:580px;max-width:95vw;max-height:90vh;
+  overflow-y:auto;border:1px solid var(--rule);box-shadow:0 8px 40px rgba(0,0,0,0.2);
+}
+body.dark .modal{background:#242424;border:none;}
+.modal-title{
+  font-family:var(--serif);font-size:18px;padding:18px 22px 14px;
+  border-bottom:1px solid var(--rule);
+}
+body.dark .modal-title{color:var(--ink);border-bottom-color:#363636;}
+.modal-body{padding:18px 22px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-row.full{grid-template-columns:1fr;}
+.form-field{display:flex;flex-direction:column;gap:4px;}
+.form-label{font-family:var(--mono);font-size:9px;letter-spacing:0.8px;text-transform:uppercase;color:var(--ink3);}
+body.dark .form-label{color:var(--ink2);}
+.form-input,.form-select,.form-textarea{
+  font-family:var(--sans);font-size:12px;padding:7px 9px;
+  border:1px solid var(--rule2);background:var(--paper);color:var(--ink);outline:none;
+}
+.form-textarea{resize:vertical;min-height:70px;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold-border);}
+body.dark .form-input,body.dark .form-select,body.dark .form-textarea{background:#2c2c2c;border-color:#484848;color:var(--ink);}
+.form-sec{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);padding:10px 0 6px;border-bottom:1px solid var(--rule);margin-bottom:12px;}
+body.dark .form-sec{border-bottom-color:#363636;}
+.modal-actions{
+  display:flex;justify-content:flex-end;gap:8px;padding:14px 22px;
+  border-top:1px solid var(--rule);
+}
+body.dark .modal-actions{border-top-color:#363636;}
+.btn-cancel{font-family:var(--mono);font-size:10px;padding:8px 18px;background:var(--paper2);border:1px solid var(--rule2);color:var(--ink3);cursor:pointer;}
+.btn-save{font-family:var(--mono);font-size:10px;padding:8px 18px;background:var(--gold-border);color:#141414;border:1px solid var(--gold-border);cursor:pointer;}
+.btn-save:hover{background:#d4b860;}
+.btn-delete{font-family:var(--mono);font-size:10px;padding:8px 18px;background:none;border:1px solid rgba(192,57,43,0.3);color:var(--red);cursor:pointer;margin-right:auto;}
+body.dark .btn-cancel{background:#2c2c2c;border-color:#484848;color:var(--ink2);}
+body.dark .btn-save{background:var(--gold-border);color:#141414;}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:300;}
+.toast{
+  background:var(--paper);border:1px solid var(--rule);box-shadow:var(--shadow);
+  padding:10px 14px;display:flex;align-items:flex-start;gap:10px;min-width:240px;
+  font-family:var(--sans);font-size:12px;
+}
+body.dark .toast{background:#2c2c2c;border-color:#484848;color:var(--ink);}
+.toast-ico{color:var(--green);font-size:14px;margin-top:1px;}
+.toast-title{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--gold-border);margin-bottom:2px;}
+.toast-msg{color:var(--ink3);}
+
+/* Empty state */
+.empty-stage{font-family:var(--mono);font-size:9px;color:var(--ink5);text-align:center;padding:16px 8px;}
+</style>
+</head>
+<body>
+
+<style>
+.paq-nav{background:#141414;border-bottom:2px solid #d4af5a;display:flex;align-items:center;height:38px;position:sticky;top:0;z-index:200;padding:0 6px;gap:0;}
+.paq-nav-btn{
+  display:flex;align-items:center;justify-content:center;
+  text-decoration:none;padding:0 13px;height:100%;
+  border:none;background:none;cursor:pointer;
+  transition:opacity 0.15s;
+}
+.paq-nav:hover .paq-nav-btn svg{ opacity:0.25; }
+.paq-nav-btn:hover svg{ opacity:1 !important; }
+.paq-nav-btn.active svg{ opacity:1 !important; }
+.paq-nav-ico{display:flex;align-items:center;justify-content:center;}
+.paq-nav-btn svg{ opacity:0.55; transition:opacity 0.15s; }
+</style>
+<nav class="paq-nav">
+  <a href="index.html" class="paq-nav-btn " title="Roster">
+    <span class="paq-nav-ico" style="color:#d4af5a"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="6" height="6" rx="0.5"/><rect x="10" y="2" width="6" height="6" rx="0.5"/><rect x="2" y="10" width="6" height="6" rx="0.5"/><rect x="10" y="10" width="6" height="6" rx="0.5"/></svg></span>
+  </a>
+  <a href="prospects.html" class="paq-nav-btn active" title="Prospects">
+    <span class="paq-nav-ico" style="color:#5aab78"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="6" r="3"/><path d="M3 15c0-3.314 2.686-5 6-5s6 1.686 6 5"/><line x1="13" y1="3" x2="13" y2="7"/><line x1="11" y1="5" x2="15" y2="5"/></svg></span>
+  </a>
+  <a href="audit.html" class="paq-nav-btn " title="Audit Check">
+    <span class="paq-nav-ico" style="color:#5b8fd4"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5"/><line x1="12" y1="12" x2="16" y2="16"/></svg></span>
+  </a>
+</nav>
+
+
+
+<header>
+  <div class="hdr-top">
+    <div>
+      <div class="logo-main">Prospect CRM</div>
+      <div class="logo-sub">Pipeline &amp; Outreach</div>
+    </div>
+  </div>
+  <div class="hdr-stats">
+    <div class="hstat"><div class="hstat-n" id="stat-total">—</div><div class="hstat-l">Total Prospects</div></div>
+    <div class="hstat"><div class="hstat-n amber" id="stat-outreach">—</div><div class="hstat-l">In Outreach</div></div>
+    <div class="hstat"><div class="hstat-n" id="stat-negotiating">—</div><div class="hstat-l">Negotiating</div></div>
+    <div class="hstat"><div class="hstat-n green" id="stat-signed">—</div><div class="hstat-l">Signed This Year</div></div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="srch">
+    <span class="srch-icon">⌕</span>
+    <input type="text" id="search" placeholder="Search prospects…" oninput="onSearch(this.value)">
+    <button class="srch-clear" id="srch-clear" onclick="clearSearch()">✕</button>
+  </div>
+  <select class="tb-select" id="filter-stage" onchange="renderAll()">
+    <option value="">All Stages</option>
+    <option value="new">New</option>
+    <option value="research">Research</option>
+    <option value="outreach">Outreach</option>
+    <option value="negotiating">Negotiating</option>
+    <option value="signed">Signed</option>
+    <option value="passed">Passed</option>
+  </select>
+  <select class="tb-select" id="filter-priority" onchange="renderAll()">
+    <option value="">All Priorities</option>
+    <option value="high">High</option>
+    <option value="med">Medium</option>
+    <option value="low">Low</option>
+  </select>
+  <select class="tb-select" id="filter-genre" onchange="renderAll()">
+    <option value="">All Genres</option>
+    <option value="Hip-Hop / Rap">Hip-Hop / Rap</option>
+    <option value="Pop">Pop</option>
+    <option value="R&B">R&B</option>
+    <option value="Latin">Latin</option>
+    <option value="Afrobeats">Afrobeats</option>
+    <option value="Electronic">Electronic</option>
+    <option value="Various">Various</option>
+  </select>
+  <div class="view-toggle">
+    <button class="vtb on" id="vt-pipeline" onclick="setView('pipeline')">⊞ Pipeline</button>
+    <button class="vtb" id="vt-list" onclick="setView('list')">☰ List</button>
+  </div>
+  <button class="add-btn" onclick="openAddModal()">+ Add Prospect</button>
+</div>
+
+<div class="layout" id="layout">
+  <div class="main-area" id="main-area">
+    <div class="pipeline" id="pipeline-view">
+      <!-- rendered by JS -->
+    </div>
+    <div class="list-view" id="list-view">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name / Alias</th>
+              <th>Stage</th>
+              <th>Priority</th>
+              <th>PRO</th>
+              <th>Genre</th>
+              <th>Spotify Monthly</th>
+              <th>YouTube Views</th>
+              <th>Last Contact</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="detail" id="detail-panel">
+    <div class="detail-hdr" id="detail-hdr">
+      <div id="d-name">—</div>
+      <div id="d-alias"></div>
+      <div class="d-hdr-actions">
+        <button class="d-btn d-btn-edit" id="d-edit-btn">Edit</button>
+        <button class="d-btn d-btn-del" id="d-del-btn">Delete</button>
+        <button class="d-btn d-btn-convert" id="d-convert-btn" title="Convert to Roster Writer">→ Roster</button>
+      </div>
+    </div>
+    <div class="d-body" id="d-body"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Add Prospect</div>
+    <div class="modal-body">
+      <div class="form-sec">Identity</div>
+      <div class="form-row">
+        <div class="form-field"><label class="form-label">Full Name *</label><input class="form-input" id="f-name" type="text" placeholder="Legal name"></div>
+        <div class="form-field"><label class="form-label">Stage Name / Alias</label><input class="form-input" id="f-alias" type="text"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label class="form-label">PRO</label>
+          <select class="form-select" id="f-pro">
+            <option value="">Unknown</option>
+            <option value="BMI">BMI</option>
+            <option value="ASCAP">ASCAP</option>
+            <option value="SESAC">SESAC</option>
+            <option value="PRS">PRS</option>
+            <option value="SOCAN">SOCAN</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-field"><label class="form-label">Genre</label>
+          <select class="form-select" id="f-genre">
+            <option value="Hip-Hop / Rap">Hip-Hop / Rap</option>
+            <option value="Pop">Pop</option>
+            <option value="R&B">R&B</option>
+            <option value="Latin">Latin</option>
+            <option value="Afrobeats">Afrobeats</option>
+            <option value="Electronic">Electronic</option>
+            <option value="Various">Various</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label class="form-label">IPI #</label><input class="form-input" id="f-ipi" type="text"></div>
+        <div class="form-field"><label class="form-label">Location</label><input class="form-input" id="f-location" type="text" placeholder="City, Country"></div>
+      </div>
+
+      <div class="form-sec">Pipeline</div>
+      <div class="form-row">
+        <div class="form-field"><label class="form-label">Stage</label>
+          <select class="form-select" id="f-stage">
+            <option value="new">New</option>
+            <option value="research">Research</option>
+            <option value="outreach">Outreach</option>
+            <option value="negotiating">Negotiating</option>
+            <option value="signed">Signed</option>
+            <option value="passed">Passed</option>
+          </select>
+        </div>
+        <div class="form-field"><label class="form-label">Priority</label>
+          <select class="form-select" id="f-priority">
+            <option value="med">Medium</option>
+            <option value="high">High</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label class="form-label">First Contact Date</label><input class="form-input" id="f-contact-date" type="date"></div>
+        <div class="form-field"><label class="form-label">Target Admin</label>
+          <select class="form-select" id="f-target-admin">
+            <option value="">TBD</option>
+            <option value="Empire">Empire</option>
+            <option value="Kobalt">Kobalt</option>
+            <option value="SongSplits">SongSplits</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-sec">Socials &amp; Streaming</div>
+      <div class="form-row">
+        <div class="form-field"><label class="form-label">Instagram</label><input class="form-input" id="f-instagram" type="url" placeholder="https://instagram.com/…"></div>
+        <div class="form-field"><label class="form-label">Twitter / X</label><input class="form-input" id="f-twitter" type="url" placeholder="https://x.com/…"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label class="form-label">Spotify Monthly Listeners</label><input class="form-input" id="f-spotify" type="text" placeholder="e.g. 1200000"></div>
+        <div class="form-field"><label class="form-label">YouTube Total Views</label><input class="form-input" id="f-youtube" type="text" placeholder="e.g. 45000000"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label class="form-label">muso.ai URL</label><input class="form-input" id="f-muso" type="url"></div>
+        <div class="form-field"><label class="form-label">Genius URL</label><input class="form-input" id="f-genius" type="url"></div>
+      </div>
+
+      <div class="form-sec">Notes</div>
+      <div class="form-row full">
+        <div class="form-field"><label class="form-label">Initial Notes</label><textarea class="form-textarea" id="f-notes" rows="3" placeholder="Why are we interested? Any context…"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-delete" id="modal-del-btn" style="display:none">Delete</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveProspect()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+const SB_URL = 'https://jbcqoxiygkdxoaulrhbk.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiY3FveGl5Z2tkeG9hdWxyaGJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyOTA1MDQsImV4cCI6MjA4ODg2NjUwNH0.IPB_7u7hU53aUI6wS-fYXLOe3_7uCAjMhDwXxQZR4s8';
+const SB_HEADERS = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`};
+const TODAY_STR = new Date().toISOString().split('T')[0];
+
+let prospects = [];
+let nextId = 1;
+let searchQ = '';
+let currentView = 'pipeline';
+let editingId = null;
+let currentDetailId = null;
+
+const STAGES = ['new','research','outreach','negotiating','signed','passed'];
+const STAGE_LABELS = {new:'New',research:'Research',outreach:'Outreach',negotiating:'Negotiating',signed:'Signed',passed:'Passed'};
+
+async function sbFetch(path, opts={}){
+  const res = await fetch(`${SB_URL}/rest/v1/${path}`,{headers:SB_HEADERS,...opts});
+  if(!res.ok){const e=await res.text();throw new Error(e);}
+  return res.status===204?null:res.json();
+}
+
+async function dbLoad(){
+  showLoader(true);
+  try{
+    const rows = await sbFetch('prospects?select=id,data&order=id');
+    if(rows&&rows.length>0){
+      prospects = rows.map(r=>({id:r.id,...r.data}));
+      nextId = Math.max(...prospects.map(p=>p.id))+1;
+    }
+  }catch(e){
+    console.error('Load failed:',e);
+    toast('Offline','Working with local data only.');
+  }
+  showLoader(false);
+  renderAll();
+}
+
+async function dbSave(p){
+  try{
+    await sbFetch('prospects',{
+      method:'POST',
+      headers:{...SB_HEADERS,'Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({id:p.id,data:p})
+    });
+  }catch(e){toast('Save Error','Change may not have saved.');}
+}
+
+async function dbDelete(id){
+  try{await sbFetch(`prospects?id=eq.${id}`,{method:'DELETE'});}
+  catch(e){toast('Delete Error','Could not delete.');}
+}
+
+function showLoader(on){
+  let el=document.getElementById('db-loader');
+  if(!el){el=document.createElement('div');el.id='db-loader';el.style.cssText='position:fixed;top:38px;left:0;right:0;height:3px;background:linear-gradient(90deg,#78a0e8,#a880e8,#e09840);z-index:999;transition:opacity .3s';document.body.prepend(el);}
+  el.style.opacity=on?'1':'0';
+}
+
+function fmtNum(n){
+  if(!n) return '—';
+  const num = parseInt(String(n).replace(/[^0-9]/g,''));
+  if(isNaN(num)) return n;
+  if(num>=1000000) return (num/1000000).toFixed(1)+'M';
+  if(num>=1000) return (num/1000).toFixed(0)+'K';
+  return num.toString();
+}
+
+function fmtDate(d){
+  if(!d) return '—';
+  const dt = new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function daysSince(d){
+  if(!d) return null;
+  return Math.floor((Date.now()-new Date(d+'T00:00:00'))/(86400000));
+}
+
+function getFiltered(){
+  let d=[...prospects];
+  const q=searchQ.toLowerCase();
+  if(q) d=d.filter(p=>(p.name+' '+(p.alias||'')).toLowerCase().includes(q));
+  const st=document.getElementById('filter-stage').value;
+  const pri=document.getElementById('filter-priority').value;
+  const genre=document.getElementById('filter-genre').value;
+  if(st) d=d.filter(p=>p.stage===st);
+  if(pri) d=d.filter(p=>p.priority===pri);
+  if(genre) d=d.filter(p=>p.genre===genre);
+  return d;
+}
+
+function renderAll(){
+  renderStats();
+  if(currentView==='pipeline') renderPipeline();
+  else renderList();
+}
+
+function renderStats(){
+  const all=prospects;
+  document.getElementById('stat-total').textContent=all.length;
+  document.getElementById('stat-outreach').textContent=all.filter(p=>p.stage==='outreach').length;
+  document.getElementById('stat-negotiating').textContent=all.filter(p=>p.stage==='negotiating').length;
+  const thisYear=new Date().getFullYear();
+  document.getElementById('stat-signed').textContent=all.filter(p=>p.stage==='signed'&&p.contactDate&&new Date(p.contactDate).getFullYear()===thisYear).length;
+}
+
+function renderPipeline(){
+  const data=getFiltered();
+  const wrap=document.getElementById('pipeline-view');
+  wrap.innerHTML=STAGES.map(stage=>{
+    const cards=data.filter(p=>p.stage===stage);
+    return `<div class="stage-col stage-${stage}">
+      <div class="stage-hdr">
+        <span class="stage-title">${STAGE_LABELS[stage]}</span>
+        <span class="stage-count">${cards.length}</span>
+      </div>
+      <div class="stage-cards">
+        ${cards.length?cards.map(p=>makeCard(p)).join(''):`<div class="empty-stage">No prospects</div>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function makeCard(p){
+  const priCls=p.priority==='high'?'priority-high':p.priority==='low'?'priority-low':'priority-med';
+  const days=daysSince(p.contactDate);
+  const daysStr=days!==null?(days===0?'Today':days===1?'Yesterday':`${days}d ago`):'';
+  return `<div class="pcard ${priCls}" onclick="openDetail(${p.id})">
+    <div class="pcard-name">${p.name}</div>
+    ${p.alias?`<div class="pcard-alias">pka ${p.alias}</div>`:''}
+    <div class="pcard-meta">
+      ${p.pro?`<span class="ptag pro-${(p.pro||'').toLowerCase()}">${p.pro}</span>`:''}
+      ${p.genre?`<span class="ptag genre">${p.genre}</span>`:''}
+      ${p.targetAdmin?`<span class="ptag">${p.targetAdmin}</span>`:''}
+    </div>
+    ${(p.spotifyMonthly||p.youtubeViews)?`<div class="pcard-streams">
+      ${p.spotifyMonthly?`<span>♫ <span class="stream-n">${fmtNum(p.spotifyMonthly)}</span></span>`:''}
+      ${p.youtubeViews?`<span>▶ <span class="stream-n">${fmtNum(p.youtubeViews)}</span></span>`:''}
+    </div>`:''}
+    ${daysStr?`<div class="pcard-date">${daysStr}</div>`:''}
+  </div>`;
+}
+
+function renderList(){
+  const data=getFiltered();
+  const tb=document.getElementById('tbody');
+  if(!data.length){tb.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;font-family:var(--mono);font-size:11px;color:var(--ink4)">No prospects match filters.</td></tr>`;return;}
+  tb.innerHTML=data.map(p=>`<tr onclick="openDetail(${p.id})">
+    <td><div class="td-name">${p.name}</div>${p.alias?`<div class="td-alias">pka ${p.alias}</div>`:''}</td>
+    <td><span class="stage-badge sb-${p.stage}">${STAGE_LABELS[p.stage]||p.stage}</span></td>
+    <td><span class="pri-dot pri-${p.priority||'med'}"></span>${(p.priority||'med').charAt(0).toUpperCase()+(p.priority||'med').slice(1)}</td>
+    <td>${p.pro||'—'}</td>
+    <td>${p.genre||'—'}</td>
+    <td style="font-family:var(--mono);font-size:10px">${fmtNum(p.spotifyMonthly)}</td>
+    <td style="font-family:var(--mono);font-size:10px">${fmtNum(p.youtubeViews)}</td>
+    <td style="font-family:var(--mono);font-size:10px">${fmtDate(p.contactDate)}</td>
+    <td style="color:var(--ink4);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.notes||'—'}</td>
+  </tr>`).join('');
+}
+
+function setView(v){
+  currentView=v;
+  document.getElementById('vt-pipeline').classList.toggle('on',v==='pipeline');
+  document.getElementById('vt-list').classList.toggle('on',v==='list');
+  document.getElementById('pipeline-view').style.display=v==='pipeline'?'flex':'none';
+  document.getElementById('list-view').style.display=v==='list'?'block':'none';
+  renderAll();
+}
+
+function openDetail(id){
+  if(currentDetailId===id && document.getElementById('detail-panel').classList.contains('open')){
+    closeDetail(); return;
+  }
+  currentDetailId=id;
+  const p=prospects.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('d-name').textContent=p.name;
+  document.getElementById('d-alias').textContent=p.alias?`pka ${p.alias}`:'';
+  document.getElementById('d-edit-btn').onclick=()=>{closeDetail();openEditModal(id);};
+  document.getElementById('d-del-btn').onclick=()=>delProspect(id);
+  document.getElementById('d-convert-btn').onclick=()=>convertToRoster(id);
+
+  const stageCls=`sb-${p.stage}`;
+  const priLabel=p.priority==='high'?'High':p.priority==='low'?'Low':'Medium';
+  const priColor=p.priority==='high'?'var(--red)':p.priority==='low'?'var(--green)':'var(--amber)';
+  const outreachHtml=(p.outreach||[]).length
+    ?p.outreach.map(o=>`<div class="outreach-item"><div class="outreach-date">${fmtDate(o.date)}</div><div class="outreach-text">${o.note}</div></div>`).join('')
+    :`<div style="font-family:var(--mono);font-size:9px;color:var(--ink5);padding:6px 0">No outreach logged yet.</div>`;
+
+  document.getElementById('d-body').innerHTML=`
+    <div class="d-sec">
+      <div class="d-sec-title">Pipeline</div>
+      <div class="d-kv">
+        <div><div class="d-k">Stage</div><div class="d-v"><span class="stage-badge ${stageCls}">${STAGE_LABELS[p.stage]||p.stage}</span></div></div>
+        <div><div class="d-k">Priority</div><div class="d-v"><span class="pri-dot pri-${p.priority||'med'}"></span><span style="color:${priColor}">${priLabel}</span></div></div>
+        ${p.targetAdmin?`<div><div class="d-k">Target Admin</div><div class="d-v">${p.targetAdmin}</div></div>`:''}
+        ${p.contactDate?`<div><div class="d-k">First Contact</div><div class="d-v" style="font-family:var(--mono);font-size:11px">${fmtDate(p.contactDate)}</div></div>`:''}
+      </div>
+    </div>
+    <div class="d-sec">
+      <div class="d-sec-title">Identity</div>
+      <div class="d-kv">
+        ${p.pro?`<div><div class="d-k">PRO</div><div class="d-v">${p.pro}</div></div>`:''}
+        ${p.genre?`<div><div class="d-k">Genre</div><div class="d-v">${p.genre}</div></div>`:''}
+        ${p.ipi?`<div><div class="d-k">IPI #</div><div class="d-v" style="font-family:var(--mono);font-size:11px">${p.ipi}</div></div>`:''}
+        ${p.location?`<div><div class="d-k">Location</div><div class="d-v">${p.location}</div></div>`:''}
+      </div>
+    </div>
+    <div class="d-sec">
+      <div class="d-sec-title">Streaming</div>
+      <div class="d-kv">
+        <div><div class="d-k">Spotify Monthly</div><div class="d-v" style="font-family:var(--mono)">${fmtNum(p.spotifyMonthly)} ${p.spotifyMonthly?`<span style="font-size:9px;color:var(--ink4)">(${Number(p.spotifyMonthly).toLocaleString()})</span>`:''}</div></div>
+        <div><div class="d-k">YouTube Views</div><div class="d-v" style="font-family:var(--mono)">${fmtNum(p.youtubeViews)} ${p.youtubeViews?`<span style="font-size:9px;color:var(--ink4)">(${Number(p.youtubeViews).toLocaleString()})</span>`:''}</div></div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+        ${p.musoUrl?`<a href="${p.musoUrl}" target="_blank" class="muso-check-btn" style="display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--blue);background:var(--blue-bg);border:1px solid #93b0d8;padding:5px 10px;text-decoration:none">♫ muso.ai →</a>`:''}
+        ${p.geniusUrl?`<a href="${p.geniusUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:#7a6600;background:#fffde0;border:1px solid #e0c800;padding:5px 10px;text-decoration:none">✦ Genius →</a>`:''}
+        ${p.instagram?`<a href="${p.instagram}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:#a050a0;background:#f8eef8;border:1px solid #c090c0;padding:5px 10px;text-decoration:none">◎ Instagram →</a>`:''}
+      </div>
+    </div>
+    <div class="d-sec">
+      <div class="d-sec-title">Notes</div>
+      <div class="d-note ${!p.notes?'d-note-empty':''}">${p.notes||'No notes yet.'}</div>
+      <textarea class="d-textarea" id="d-notes-edit" placeholder="Add or update notes…">${p.notes||''}</textarea>
+      <button class="d-save-btn" onclick="saveNotes(${id})">Save Notes</button>
+    </div>
+    <div class="d-sec">
+      <div class="d-sec-title">Outreach History</div>
+      <div class="outreach-list">${outreachHtml}</div>
+      <div class="add-outreach-area">
+        <input type="date" id="outreach-date-${id}" value="${TODAY_STR}" max="${TODAY_STR}">
+        <textarea class="d-textarea" id="outreach-note-${id}" placeholder="Log outreach note…" style="min-height:55px"></textarea>
+        <button class="d-save-btn" onclick="addOutreach(${id})">+ Log Outreach</button>
+      </div>
+    </div>`;
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function closeDetail(){
+  document.getElementById('detail-panel').classList.remove('open');
+  currentDetailId=null;
+}
+
+async function saveNotes(id){
+  const p=prospects.find(x=>x.id===id);
+  p.notes=document.getElementById('d-notes-edit').value.trim();
+  toast('Notes Saved',`Notes updated for ${p.name}.`);
+  openDetail(id);
+  await dbSave(p);
+}
+
+async function addOutreach(id){
+  const p=prospects.find(x=>x.id===id);
+  const date=document.getElementById(`outreach-date-${id}`).value;
+  const note=document.getElementById(`outreach-note-${id}`).value.trim();
+  if(!note){toast('Missing Note','Please add an outreach note.');return;}
+  if(!p.outreach) p.outreach=[];
+  p.outreach.unshift({date,note});
+  p.contactDate=p.contactDate||date;
+  toast('Logged',`Outreach logged for ${p.name}.`);
+  openDetail(id);
+  renderAll();
+  await dbSave(p);
+}
+
+function convertToRoster(id){
+  const p=prospects.find(x=>x.id===id);
+  if(!confirm(`Convert ${p.name} to a roster writer? This will open the roster page with pre-filled info.`)) return;
+  const params=new URLSearchParams({
+    name:p.name,alias:p.alias||'',pro:p.pro||'',genre:p.genre||'',
+    company:'',admin:p.targetAdmin||''
+  });
+  window.open(`index.html?prefill=1&${params.toString()}`, '_blank');
+}
+
+function openAddModal(){
+  editingId=null;
+  clearForm();
+  document.getElementById('modal-title').textContent='Add Prospect';
+  document.getElementById('modal-del-btn').style.display='none';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function openEditModal(id){
+  editingId=id;
+  const p=prospects.find(x=>x.id===id);
+  document.getElementById('modal-title').textContent='Edit Prospect';
+  document.getElementById('modal-del-btn').style.display='inline-block';
+  document.getElementById('modal-del-btn').onclick=()=>{closeModal();delProspect(id);};
+  document.getElementById('f-name').value=p.name;
+  document.getElementById('f-alias').value=p.alias||'';
+  document.getElementById('f-pro').value=p.pro||'';
+  document.getElementById('f-genre').value=p.genre||'Hip-Hop / Rap';
+  document.getElementById('f-ipi').value=p.ipi||'';
+  document.getElementById('f-location').value=p.location||'';
+  document.getElementById('f-stage').value=p.stage||'new';
+  document.getElementById('f-priority').value=p.priority||'med';
+  document.getElementById('f-contact-date').value=p.contactDate||'';
+  document.getElementById('f-target-admin').value=p.targetAdmin||'';
+  document.getElementById('f-instagram').value=p.instagram||'';
+  document.getElementById('f-twitter').value=p.twitter||'';
+  document.getElementById('f-spotify').value=p.spotifyMonthly||'';
+  document.getElementById('f-youtube').value=p.youtubeViews||'';
+  document.getElementById('f-muso').value=p.musoUrl||'';
+  document.getElementById('f-genius').value=p.geniusUrl||'';
+  document.getElementById('f-notes').value=p.notes||'';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function clearForm(){
+  ['f-name','f-alias','f-ipi','f-location','f-contact-date','f-instagram','f-twitter','f-spotify','f-youtube','f-muso','f-genius','f-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-pro').value='';
+  document.getElementById('f-genre').value='Hip-Hop / Rap';
+  document.getElementById('f-stage').value='new';
+  document.getElementById('f-priority').value='med';
+  document.getElementById('f-target-admin').value='';
+}
+
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+
+async function saveProspect(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){alert('Name is required.');return;}
+  const data={
+    name, alias:document.getElementById('f-alias').value.trim(),
+    pro:document.getElementById('f-pro').value,
+    genre:document.getElementById('f-genre').value,
+    ipi:document.getElementById('f-ipi').value.trim(),
+    location:document.getElementById('f-location').value.trim(),
+    stage:document.getElementById('f-stage').value,
+    priority:document.getElementById('f-priority').value,
+    contactDate:document.getElementById('f-contact-date').value,
+    targetAdmin:document.getElementById('f-target-admin').value,
+    instagram:document.getElementById('f-instagram').value.trim(),
+    twitter:document.getElementById('f-twitter').value.trim(),
+    spotifyMonthly:document.getElementById('f-spotify').value.trim(),
+    youtubeViews:document.getElementById('f-youtube').value.trim(),
+    musoUrl:document.getElementById('f-muso').value.trim(),
+    geniusUrl:document.getElementById('f-genius').value.trim(),
+    notes:document.getElementById('f-notes').value.trim(),
+  };
+  let saved;
+  if(editingId){
+    const i=prospects.findIndex(p=>p.id===editingId);
+    prospects[i]={...prospects[i],...data};
+    saved=prospects[i];
+    toast('Updated',`${name} updated.`);
+  } else {
+    const p={id:nextId++,...data,outreach:[]};
+    prospects.push(p);
+    saved=p;
+    toast('Added',`${name} added to pipeline.`);
+  }
+  closeModal();
+  renderAll();
+  await dbSave(saved);
+}
+
+async function delProspect(id){
+  const p=prospects.find(x=>x.id===id);
+  if(!confirm(`Remove ${p.name} from prospects?`)) return;
+  prospects=prospects.filter(x=>x.id!==id);
+  closeDetail();
+  renderAll();
+  await dbDelete(id);
+}
+
+function onSearch(v){
+  searchQ=v;
+  document.getElementById('srch-clear').classList.toggle('visible',v.length>0);
+  renderAll();
+}
+function clearSearch(){
+  searchQ='';
+  document.getElementById('search').value='';
+  document.getElementById('srch-clear').classList.remove('visible');
+  renderAll();
+}
+
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  localStorage.setItem('paq-dark',document.body.classList.contains('dark')?'1':'0');
+}
+if(localStorage.getItem('paq-dark')==='1') document.body.classList.add('dark');
+
+function toast(title,msg){
+  const el=document.createElement('div');el.className='toast';
+  el.innerHTML=`<div class="toast-ico">✓</div><div><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>`;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),350);},4000);
+}
+
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.addEventListener('click',function(e){
+  const panel=document.getElementById('detail-panel');
+  if(panel.classList.contains('open')&&!panel.contains(e.target)&&!e.target.closest('.pcard')&&!e.target.closest('tbody tr'))closeDetail();
+});
+
+dbLoad();
+</script>
+</body>
+</html>
