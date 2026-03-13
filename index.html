@@ -53,11 +53,11 @@
 --kobalt-alias:  #3a5f9a;
 /* SongSplits = muted yellow */
 --splits:        #7a6a00;
---splits-mid:    #b0980a;
+--splits-mid:    #8da800;
 --splits-bg:     #fdfbe8;
 --splits-card:   #f7f4d4;
 --splits-border: rgba(160,140,10,0.25);
---splits-alias:  #8a7800;
+--splits-alias:  #7a6a00;
   --serif: 'DM Serif Display', serif;
   --mono: 'DM Mono', monospace;
   --sans: 'DM Sans', sans-serif;
@@ -289,7 +289,7 @@ body.dark .dark-toggle:hover { border-color: var(--gold-border); }
 body.dark .admin-section-hdr { border-color: #404040 !important; }
 body.dark .empire .admin-section-hdr { border-color: #c9931a !important; }
 body.dark .kobalt .admin-section-hdr { border-color: #4a72b8 !important; }
-body.dark .songsplits .admin-section-hdr { border-color: #b0980a !important; }
+body.dark .songsplits .admin-section-hdr { border-color: #8da800 !important; }
 body.dark .admin-section-label { background: #2c2c2c !important; border-color: #484848 !important; }
 body.dark .empire .admin-section-label     { background: #2c2010 !important; color: #d4a050 !important; border-color: #584020 !important; }
 body.dark .kobalt .admin-section-label     { background: #101828 !important; color: #78a0e8 !important; border-color: #283860 !important; }
@@ -506,7 +506,7 @@ tbody tr:hover{ background:#ddd8ce!important; }
 /* Admin left-border accent — thick, clean, no background tint */
 tbody tr.adm-empire     { border-left:4px solid #c9931a; }
 tbody tr.adm-kobalt     { border-left:4px solid #4a72b8; }
-tbody tr.adm-songsplits { border-left:4px solid #b0980a; }
+tbody tr.adm-songsplits { border-left:4px solid #8da800; }
 
 /* Compliance flags override border color */
 /* Flag compliance shown via chips in cells — admin color always wins on border */
@@ -518,7 +518,7 @@ tbody tr.adm-songsplits { border-left:4px solid #b0980a; }
 }
 .adm-empire     .adm-dot { background:#c9931a; }
 .adm-kobalt     .adm-dot { background:#4a72b8; }
-.adm-songsplits .adm-dot { background:#b0980a; }
+.adm-songsplits .adm-dot { background:#8da800; }
 .adm-empire     .aname   { color:#8b5e0a; }
 .adm-kobalt     .aname   { color:#2a4f8a; }
 .adm-songsplits .aname   { color:#7a6a00; }
@@ -583,7 +583,7 @@ td:last-child{border-right:none;}
 .adm-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;flex-shrink:0;}
 .adm-empire     .adm-dot { background:#c9931a; }
 .adm-kobalt     .adm-dot { background:#4a72b8; }
-.adm-songsplits .adm-dot { background:#b0980a; }
+.adm-songsplits .adm-dot { background:#8da800; }
 
 /* Chip — date status pill */
 .chip {
@@ -639,7 +639,7 @@ td:last-child{border-right:none;}
 }
 .admin-section-hdr.empire     { border-color: #c9931a; }
 .admin-section-hdr.kobalt     { border-color: #4a72b8; }
-.admin-section-hdr.songsplits { border-color: #b0980a; }
+.admin-section-hdr.songsplits { border-color: #8da800; }
 
 .admin-section-label{
   font-family:var(--mono);font-size:8px;letter-spacing:3px;text-transform:uppercase;
@@ -701,7 +701,7 @@ td:last-child{border-right:none;}
 }
 .empire  .wcard { border-left-color:#c9931a; }
 .kobalt  .wcard { border-left-color:#4a72b8; }
-.songsplits .wcard { border-left-color:#b0980a; }
+.songsplits .wcard { border-left-color:#8da800; }
 
 .wcard:hover{ transform:scale(0.992); box-shadow:inset 0 1px 8px rgba(0,0,0,0.05); background:rgba(0,0,0,0.025); }
 
@@ -738,7 +738,7 @@ td:last-child{border-right:none;}
 }
 .empire     .wcard-alias { color:#c9931a; }
 .kobalt     .wcard-alias { color:#4a72b8; }
-.songsplits .wcard-alias { color:#b0980a; }
+.songsplits .wcard-alias { color:#8da800; }
 
 .wcard-dots{
   display:flex;flex-direction:column;gap:3px;
@@ -825,7 +825,7 @@ td:last-child{border-right:none;}
 
 .empire .admin-chevron   { color:#c9931a; }
 .kobalt .admin-chevron   { color:#4a72b8; }
-.songsplits .admin-chevron { color:#b0980a; }
+.songsplits .admin-chevron { color:#8da800; }
 
 /* Hidden utility */
 .hidden{display:none!important;}
@@ -2410,7 +2410,7 @@ function renderCards(){
 
   // ── Audit backward toggle: admin→company structure, priority sort, exclude <6mo ──
   if(toggleState.auditComplete===-1){
-    const ADMIN_COLORS={Empire:'#c9931a',Kobalt:'#4a72b8',SongSplits:'#b0980a'};
+    const ADMIN_COLORS={Empire:'#c9931a',Kobalt:'#4a72b8',SongSplits:'#8da800'};
     const cardGridCls = compactMode ? 'co-cards compact' : 'co-cards';
 
     // Build a makeCard variant that colors pka in admin color and wraps with priority
@@ -2470,7 +2470,7 @@ function renderCards(){
 
   // ── StmtSent backward toggle: admin→company structure, with admin squares ──
   if(toggleState.stmtSent===-1){
-    const ADMIN_COLORS_S={Empire:'#c9931a',Kobalt:'#4a72b8',SongSplits:'#b0980a'};
+    const ADMIN_COLORS_S={Empire:'#c9931a',Kobalt:'#4a72b8',SongSplits:'#8da800'};
     const cardGridCls = compactMode ? 'co-cards compact' : 'co-cards';
 
     const html = ADMIN_ORDER.filter(admin=>Object.keys(tree[admin]).length>0).map(admin=>{
@@ -2616,7 +2616,7 @@ async function saveWriter(){
   if(!name){ alert('Writer name is required.'); return; }
   const sR={},sS={};
   [1,2,3,4].forEach(q=>{ sR[`q${q}`]=document.getElementById(`f-stmt-recv-q${q}`).checked; sS[`q${q}`]=document.getElementById(`f-stmt-sent-q${q}`).checked; });
-  const data={name,alias:document.getElementById('f-alias').value.trim(),ipi:document.getElementById('f-ipi').value.trim(),pro:document.getElementById('f-pro').value,company:document.getElementById('f-company').value.trim()||'Unassigned',admin:document.getElementById('f-admin').value.trim()||'Unassigned',genre:document.getElementById('f-genre').value,status:document.getElementById('f-status').value,scheduleA:document.getElementById('f-scheduleA').value||TODAY_STR,auditCompleted:document.getElementById('f-auditCompleted').value||TODAY_STR,auditSent:document.getElementById('f-auditSent').value||TODAY_STR,splitsMissing:document.getElementById('f-splits-missing').checked,splitsOutreach:document.getElementById('f-splits-outreach').checked,stmtRecv:sR,stmtSent:sS,geniusUrl:document.getElementById('f-genius').value.trim(),musoUrl:document.getElementById('f-muso').value.trim()};
+  const data={name,alias:document.getElementById('f-alias').value.trim(),ipi:document.getElementById('f-ipi').value.trim(),pro:document.getElementById('f-pro').value,company:document.getElementById('f-company').value.trim()||'Unassigned',admin:document.getElementById('f-admin').value.trim()||'Unassigned',genre:document.getElementById('f-genre').value,status:document.getElementById('f-status').value,scheduleA:document.getElementById('f-scheduleA').value||'',auditCompleted:document.getElementById('f-auditCompleted').value||'',auditSent:document.getElementById('f-auditSent').value||'',splitsMissing:document.getElementById('f-splits-missing').checked,splitsOutreach:document.getElementById('f-splits-outreach').checked,stmtRecv:sR,stmtSent:sS,geniusUrl:document.getElementById('f-genius').value.trim(),musoUrl:document.getElementById('f-muso').value.trim()};
   let saved;
   if(editingId){ const i=writers.findIndex(w=>w.id===editingId); writers[i]={...writers[i],...data}; saved=writers[i]; toast('Writer Updated',`${name} has been updated.`); }
   else{ const w={id:nextId++,...data}; writers.push(w); saved=w; toast('Writer Added',`${name} added to the roster.`); }
@@ -2634,10 +2634,11 @@ function openDetail(id){
     closeDetail(); return;
   }
   currentDetailId = id;
+  document.getElementById('detail-panel').scrollTop = 0;
   const w=writers.find(x=>x.id===id);
   if(!w){ console.error('openDetail: writer not found for id='+id+' writers.length='+writers.length); return; }
   // Set header accent color based on admin
-  const _adminAccents={Empire:'#c9931a',Kobalt:'#4a72b8',SongSplits:'#b0980a'};
+  const _adminAccents={Empire:'#c9931a',Kobalt:'#4a72b8',SongSplits:'#8da800'};
   const hdr=document.getElementById('detail-panel').querySelector('.detail-hdr');
   if(hdr){
     hdr.style.background='#141414';
@@ -2660,11 +2661,13 @@ function openDetail(id){
         <div><div class="d-k">Status</div><div class="d-v">${w.status.charAt(0).toUpperCase()+w.status.slice(1)}</div></div>
         <div><div class="d-k">IPI #</div><div class="d-v" style="font-family:var(--mono);font-size:11px">${w.ipi||'—'}</div></div>
         <div><div class="d-k">Company</div><div class="d-v">${w.company}</div></div>
-        <div><div class="d-k">Administrator</div><div class="d-v" style="color:${_adminAccents[w.admin]||'var(--gold-border)'};font-weight:600">${w.admin}</div></div>
+        <div><div class="d-k">Administrator</div><div class="d-v"><span style="display:inline-block;padding:2px 8px;background:${_adminAccents[w.admin]||'#888'};color:#fff;font-family:var(--mono);font-size:9px;letter-spacing:1.5px;font-weight:700">${(w.admin||'').toUpperCase()}</span></div></div>
         <div><div class="d-k">Genre</div><div class="d-v">${w.genre}</div></div>
       </div>
-      <a class="muso-check-btn" href="${w.musoUrl||musoUrl(w.name)}" target="_blank">♫ muso.ai →</a>
-      ${w.geniusUrl?`<a class="genius-btn" href="${w.geniusUrl}" target="_blank">✦ Genius →</a>`:''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
+        <a class="muso-check-btn" href="${w.musoUrl||musoUrl(w.name)}" target="_blank">♫ muso.ai →</a>
+        ${w.geniusUrl?`<a class="genius-btn" href="${w.geniusUrl}" target="_blank">✦ Genius →</a>`:''}
+      </div>
     </div>
     <div class="d-sec${!w.scheduleA||mths(w.scheduleA)>=6?' needs-action':''}">
       <div class="d-sec-title">Schedule A${!w.scheduleA||mths(w.scheduleA)>=6?' ⚡':''}</div>
@@ -2994,7 +2997,7 @@ function showLoader(on){
   if(!el){
     el = document.createElement('div');
     el.id = 'db-loader';
-    el.style.cssText = 'position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#c9931a,#4a72b8,#b0980a);z-index:999;transition:opacity .3s';
+    el.style.cssText = 'position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#c9931a,#4a72b8,#8da800);z-index:999;transition:opacity .3s';
     document.body.prepend(el);
   }
   el.style.opacity = on ? '1' : '0';
