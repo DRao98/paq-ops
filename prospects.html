@@ -444,6 +444,28 @@ body.dark .rlink-input textarea{background:#2c2c2c;border-color:#404040;color:va
 body.dark .rthresh-row input{background:#2c2c2c;border-color:#404040;color:var(--ink);}
 body.dark .ig-period-btn.on{background:#444;color:var(--gold-border);border-color:#666;}
 
+
+/* ── DETAIL INLINE EDIT ─────────────────────────────── */
+.d-field-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--rule);}
+.d-field-row:last-child{border-bottom:none;}
+.d-field-row .d-k{font-family:var(--mono);font-size:8.5px;color:var(--ink4);min-width:110px;flex-shrink:0;}
+.d-v-edit{flex:1;}
+.d-inline-input{font-family:var(--mono);font-size:10px;padding:2px 6px;border:1px solid transparent;background:transparent;color:var(--ink);width:100%;border-radius:0;}
+.d-inline-input:hover{border-color:var(--rule2);}
+.d-inline-input:focus{border-color:var(--gold-border);outline:none;background:var(--paper);}
+select.d-inline-input{cursor:pointer;}
+.d-songs-list{margin-top:4px;}
+.d-songs-hdr{display:flex;gap:6px;font-family:var(--mono);font-size:8px;color:var(--ink5);padding:2px 0;border-bottom:1px solid var(--rule);}
+.d-songs-hdr span:first-child{flex:2;}
+.d-songs-hdr span{flex:1;text-align:right;}
+.d-song-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--rule);cursor:pointer;font-family:var(--mono);font-size:9.5px;}
+.d-song-row:hover{background:var(--paper2);}
+.d-song-row:last-child{border-bottom:none;}
+.d-song-title{flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink2);}
+.d-song-val{flex:1;text-align:right;color:var(--ink4);}
+.song-mil{color:var(--green) !important;}
+body.dark .d-inline-input:focus{background:#2c2c2c;}
+
 </style>
 <nav class="paq-nav">
   <a href="index.html" class="paq-nav-btn " title="Roster">
@@ -510,8 +532,8 @@ body.dark .ig-period-btn.on{background:#444;color:var(--gold-border);border-colo
   </select>
   <div class="view-toggle">
     <button class="vtb on" id="vt-pipeline" onclick="setView('pipeline')">⊞ Pipeline</button>
+    <button class="vtb" id="vt-research" onclick="setView('research')">◎ Research</button>
     <button class="vtb" id="vt-list" onclick="setView('list')">☰ List</button>
-  <button class="vtb" id="vt-research" onclick="setView('research')">◎ Research</button>
   </div>
   <button class="add-btn" onclick="openAddModal()">+ Add Prospect</button>
 </div>
@@ -564,92 +586,34 @@ body.dark .ig-period-btn.on{background:#444;color:var(--gold-border);border-colo
   <div class="modal">
     <div class="modal-title" id="modal-title">Add Prospect</div>
     <div class="modal-body">
-      <div class="form-sec">Identity</div>
       <div class="form-row">
         <div class="form-field"><label class="form-label">Full Name *</label><input class="form-input" id="f-name" type="text" placeholder="Legal name"></div>
-        <div class="form-field"><label class="form-label">Stage Name / Alias</label><input class="form-input" id="f-alias" type="text"></div>
+        <div class="form-field"><label class="form-label">Stage Name / pka</label><input class="form-input" id="f-alias" type="text" placeholder="pka"></div>
+      </div>
+      <div class="form-sec" style="margin-top:12px">Links</div>
+      <div class="form-row">
+        <div class="form-field"><label class="form-label">Spotify Artist URL</label><input class="form-input" id="f-spotify-url" type="url" placeholder="open.spotify.com/artist/…"></div>
+        <div class="form-field"><label class="form-label">Instagram</label><input class="form-input" id="f-instagram" type="url" placeholder="instagram.com/…"></div>
       </div>
       <div class="form-row">
-        <div class="form-field"><label class="form-label">PRO</label>
-          <select class="form-select" id="f-pro">
-            <option value="">Unknown</option>
-            <option value="BMI">BMI</option>
-            <option value="ASCAP">ASCAP</option>
-            <option value="SESAC">SESAC</option>
-            <option value="PRS">PRS</option>
-            <option value="SOCAN">SOCAN</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="form-field"><label class="form-label">Genre</label>
-          <select class="form-select" id="f-genre">
-            <option value="Hip-Hop / Rap">Hip-Hop / Rap</option>
-            <option value="Pop">Pop</option>
-            <option value="R&B">R&B</option>
-            <option value="Latin">Latin</option>
-            <option value="Afrobeats">Afrobeats</option>
-            <option value="Electronic">Electronic</option>
-            <option value="Various">Various</option>
-          </select>
-        </div>
+        <div class="form-field"><label class="form-label">Muso URL</label><input class="form-input" id="f-muso" type="url" placeholder="credits.muso.ai/profile/…"></div>
+        <div class="form-field"><label class="form-label">Genius URL</label><input class="form-input" id="f-genius" type="url" placeholder="genius.com/artists/…"></div>
       </div>
-      <div class="form-row">
-        <div class="form-field"><label class="form-label">IPI #</label><input class="form-input" id="f-ipi" type="text"></div>
-        <div class="form-field"><label class="form-label">Location</label><input class="form-input" id="f-location" type="text" placeholder="City, Country"></div>
-      </div>
-
-      <div class="form-sec">Pipeline</div>
-      <div class="form-row">
-        <div class="form-field"><label class="form-label">Stage</label>
-          <select class="form-select" id="f-stage">
-            <option value="new">New</option>
-            <option value="research">Research</option>
-            <option value="outreach">Outreach</option>
-            <option value="negotiating">Negotiating</option>
-            <option value="signed">Signed</option>
-            <option value="passed">Passed</option>
-          </select>
-        </div>
-        <div class="form-field"><label class="form-label">Priority</label>
-          <select class="form-select" id="f-priority">
-            <option value="med">Medium</option>
-            <option value="high">High</option>
-            <option value="low">Low</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field"><label class="form-label">First Contact Date</label><input class="form-input" id="f-contact-date" type="date"></div>
-        <div class="form-field"><label class="form-label">Target Admin</label>
-          <select class="form-select" id="f-target-admin">
-            <option value="">TBD</option>
-            <option value="Empire">Empire</option>
-            <option value="Kobalt">Kobalt</option>
-            <option value="SongSplits">SongSplits</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-sec">Socials &amp; Streaming</div>
-      <div class="form-row">
-        <div class="form-field"><label class="form-label">Instagram</label><input class="form-input" id="f-instagram" type="url" placeholder="https://instagram.com/…"></div>
-        <div class="form-field"><label class="form-label">Twitter / X</label><input class="form-input" id="f-twitter" type="url" placeholder="https://x.com/…"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-field"><label class="form-label">Spotify Monthly Listeners</label><input class="form-input" id="f-spotify" type="text" placeholder="e.g. 1200000"></div>
-        <div class="form-field"><label class="form-label">YouTube Total Views</label><input class="form-input" id="f-youtube" type="text" placeholder="e.g. 45000000"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-field"><label class="form-label">muso.ai URL</label><input class="form-input" id="f-muso" type="url"></div>
-        <div class="form-field"><label class="form-label">Genius URL</label><input class="form-input" id="f-genius" type="url"></div>
-      </div>
-
-      <div class="form-sec">Notes</div>
-      <div class="form-row full">
-        <div class="form-field"><label class="form-label">Initial Notes</label><textarea class="form-textarea" id="f-notes" rows="3" placeholder="Why are we interested? Any context…"></textarea></div>
-      </div>
+      <!-- Hidden fields needed by saveProspect -->
+      <input type="hidden" id="f-pro" value="">
+      <input type="hidden" id="f-genre" value="Hip-Hop / Rap">
+      <input type="hidden" id="f-ipi" value="">
+      <input type="hidden" id="f-location" value="">
+      <input type="hidden" id="f-stage" value="new">
+      <input type="hidden" id="f-priority" value="med">
+      <input type="hidden" id="f-contact-date" value="">
+      <input type="hidden" id="f-target-admin" value="">
+      <input type="hidden" id="f-twitter" value="">
+      <input type="hidden" id="f-spotify" value="">
+      <input type="hidden" id="f-youtube" value="">
+      <input type="hidden" id="f-notes" value="">
     </div>
-    <div class="modal-actions">
+        <div class="modal-actions">
       <button class="btn-delete" id="modal-del-btn" style="display:none">Delete</button>
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-save" onclick="saveProspect()">Save</button>
@@ -837,57 +801,92 @@ function openDetail(id){
     closeDetail(); return;
   }
   currentDetailId=id;
-  const p=prospects.find(x=>x.id===id);
-  if(!p) return;
+  renderDetail(id);
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function renderDetail(id){
+  const p=prospects.find(x=>x.id===id); if(!p) return;
+  const r=p.research||{};
+  const songs=(r.songs||[]).filter(s=>s.year===0||s.year>=(new Date().getFullYear()-3)).sort((a,b)=>(b.spStreams||0)-(a.spStreams||0));
+
   document.getElementById('d-name').textContent=p.name;
   document.getElementById('d-alias').textContent=p.alias?`pka ${p.alias}`:'';
-  document.getElementById('d-edit-btn').onclick=()=>{closeDetail();openEditModal(id);};
+  document.getElementById('d-edit-btn').onclick=()=>openEditModal(id);
   document.getElementById('d-del-btn').onclick=()=>delProspect(id);
   document.getElementById('d-convert-btn').onclick=()=>convertToRoster(id);
 
-  const stageCls=`sb-${p.stage}`;
-  const priLabel=p.priority==='high'?'High':p.priority==='low'?'Low':'Medium';
-  const priColor=p.priority==='high'?'var(--red)':p.priority==='low'?'var(--green)':'var(--amber)';
   const outreachHtml=(p.outreach||[]).length
     ?p.outreach.map(o=>`<div class="outreach-item"><div class="outreach-date">${fmtDate(o.date)}</div><div class="outreach-text">${o.note}</div></div>`).join('')
     :`<div style="font-family:var(--mono);font-size:9px;color:var(--ink5);padding:6px 0">No outreach logged yet.</div>`;
 
+  // Inline editable field helper
+  const field = (label, val, inputId, type='text', opts='') =>
+    `<div class="d-field-row">
+      <div class="d-k">${label}</div>
+      <div class="d-v-edit">
+        ${type==='select'
+          ? `<select class="d-inline-input" id="${inputId}" onchange="saveDetailField(${id},'${inputId}',this.value)">${opts}</select>`
+          : `<input class="d-inline-input" type="${type}" id="${inputId}" value="${(val||'').toString().replace(/"/g,'&quot;')}" placeholder="—" onblur="saveDetailField(${id},'${inputId}',this.value)">`
+        }
+      </div>
+    </div>`;
+
+  const stageOpts = ['new','research','outreach','negotiating','signed','passed']
+    .map(s=>`<option value="${s}" ${p.stage===s?'selected':''}>${STAGE_LABELS[s]||s}</option>`).join('');
+  const priOpts = ['high','med','low'].map(v=>`<option value="${v}" ${(p.priority||'med')===v?'selected':''}>${v.charAt(0).toUpperCase()+v.slice(1)}</option>`).join('');
+  const proOpts = ['','BMI','ASCAP','SESAC','PRS','SOCAN','Other'].map(v=>`<option value="${v}" ${p.pro===v?'selected':''}>${v||'Unknown'}</option>`).join('');
+  const genreOpts = ['Hip-Hop / Rap','Pop','R&B','Latin','Afrobeats','Electronic','Various'].map(v=>`<option value="${v}" ${p.genre===v?'selected':''}>${v}</option>`).join('');
+
+  // Songs section — auto from research, click to edit
+  const songsHtml = songs.length
+    ? `<div class="d-songs-list">
+        <div class="d-songs-hdr"><span>Title</span><span>Year</span><span>YT Views</span><span>Spotify</span></div>
+        ${songs.map((s,i)=>`<div class="d-song-row" onclick="editSongInline(${id},${i},this)">
+          <span class="d-song-title">${s.title}</span>
+          <span class="d-song-val">${s.year||'?'}</span>
+          <span class="d-song-val">${s.ytViews?fmtNum(s.ytViews):'—'}</span>
+          <span class="d-song-val ${(s.spStreams||0)>=1000000?'song-mil':''}">${s.spStreams?fmtNum(s.spStreams):'—'}</span>
+        </div>`).join('')}
+      </div>`
+    : `<div style="font-family:var(--mono);font-size:9px;color:var(--ink5);padding:4px 0">No songs yet — add source links and sync</div>`;
+
   document.getElementById('d-body').innerHTML=`
     <div class="d-sec">
       <div class="d-sec-title">Pipeline</div>
-      <div class="d-kv">
-        <div><div class="d-k">Stage</div><div class="d-v"><span class="stage-badge ${stageCls}">${STAGE_LABELS[p.stage]||p.stage}</span></div></div>
-        <div><div class="d-k">Priority</div><div class="d-v"><span class="pri-dot pri-${p.priority||'med'}"></span><span style="color:${priColor}">${priLabel}</span></div></div>
-        ${p.targetAdmin?`<div><div class="d-k">Target Admin</div><div class="d-v">${p.targetAdmin}</div></div>`:''}
-        ${p.contactDate?`<div><div class="d-k">First Contact</div><div class="d-v" style="font-family:var(--mono);font-size:11px">${fmtDate(p.contactDate)}</div></div>`:''}
-      </div>
+      ${field('Stage','',`dp-stage-${id}`,'select',stageOpts)}
+      ${field('Priority','',`dp-pri-${id}`,'select',priOpts)}
+      ${field('Target Admin',p.targetAdmin,`dp-admin-${id}`)}
+      ${field('First Contact',p.contactDate,`dp-contact-${id}`,'date')}
     </div>
     <div class="d-sec">
       <div class="d-sec-title">Identity</div>
-      <div class="d-kv">
-        ${p.pro?`<div><div class="d-k">PRO</div><div class="d-v">${p.pro}</div></div>`:''}
-        ${p.genre?`<div><div class="d-k">Genre</div><div class="d-v">${p.genre}</div></div>`:''}
-        ${p.ipi?`<div><div class="d-k">IPI #</div><div class="d-v" style="font-family:var(--mono);font-size:11px">${p.ipi}</div></div>`:''}
-        ${p.location?`<div><div class="d-k">Location</div><div class="d-v">${p.location}</div></div>`:''}
-      </div>
+      ${field('Full Name',p.name,`dp-name-${id}`)}
+      ${field('Alias / Stage Name',p.alias,`dp-alias-${id}`)}
+      ${field('PRO','',`dp-pro-${id}`,'select',proOpts)}
+      ${field('Genre','',`dp-genre-${id}`,'select',genreOpts)}
+      ${field('IPI #',p.ipi,`dp-ipi-${id}`)}
+      ${field('Location',p.location,`dp-location-${id}`)}
     </div>
     <div class="d-sec">
-      <div class="d-sec-title">Streaming</div>
-      <div class="d-kv">
-        <div><div class="d-k">Spotify Monthly</div><div class="d-v" style="font-family:var(--mono)">${fmtNum(p.spotifyMonthly)} ${p.spotifyMonthly?`<span style="font-size:9px;color:var(--ink4)">(${Number(p.spotifyMonthly).toLocaleString()})</span>`:''}</div></div>
-        <div><div class="d-k">YouTube Views</div><div class="d-v" style="font-family:var(--mono)">${fmtNum(p.youtubeViews)} ${p.youtubeViews?`<span style="font-size:9px;color:var(--ink4)">(${Number(p.youtubeViews).toLocaleString()})</span>`:''}</div></div>
-      </div>
-      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-        ${p.musoUrl?`<a href="${p.musoUrl}" target="_blank" class="muso-check-btn" style="display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--blue);background:var(--blue-bg);border:1px solid #93b0d8;padding:5px 10px;text-decoration:none">♫ muso.ai →</a>`:''}
-        ${p.geniusUrl?`<a href="${p.geniusUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:#7a6600;background:#fffde0;border:1px solid #e0c800;padding:5px 10px;text-decoration:none">✦ Genius →</a>`:''}
-        ${p.instagram?`<a href="${p.instagram}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:#a050a0;background:#f8eef8;border:1px solid #c090c0;padding:5px 10px;text-decoration:none">◎ Instagram →</a>`:''}
-      </div>
+      <div class="d-sec-title">Streaming <span style="font-size:8px;color:var(--ink5);font-weight:400">— click values to edit</span></div>
+      ${field('Spotify Monthly Listeners',p.spotifyMonthly||r.spFollowers||'',`dp-spotify-${id}`,'text')}
+      ${field('YouTube Total Views',p.youtubeViews||'',`dp-youtube-${id}`,'text')}
+      <div class="d-sec-title" style="margin-top:10px">Top Songs (last 3 yrs)</div>
+      ${songsHtml}
+      <button class="d-save-btn" style="margin-top:6px" onclick="openAddSong(${id})">+ Add Song Manually</button>
+    </div>
+    <div class="d-sec">
+      <div class="d-sec-title">Links</div>
+      ${field('Spotify Artist URL',p.spotifyUrl||r.spotifyUrl||'',`dp-spurl-${id}`,'url')}
+      ${field('Instagram',p.instagram||'',`dp-ig-${id}`,'url')}
+      ${field('Muso URL',p.musoUrl||'',`dp-muso-${id}`,'url')}
+      ${field('Genius URL',p.geniusUrl||'',`dp-genius-${id}`,'url')}
+      ${field('Twitter / X',p.twitter||'',`dp-twitter-${id}`,'url')}
     </div>
     <div class="d-sec">
       <div class="d-sec-title">Notes</div>
-      <div class="d-note ${!p.notes?'d-note-empty':''}">${p.notes||'No notes yet.'}</div>
-      <textarea class="d-textarea" id="d-notes-edit" placeholder="Add or update notes…">${p.notes||''}</textarea>
-      <button class="d-save-btn" onclick="saveNotes(${id})">Save Notes</button>
+      <textarea class="d-textarea" id="d-notes-edit" placeholder="Add notes…" onblur="saveDetailField(${id},'dp-notes-${id}',this.value)">${p.notes||''}</textarea>
     </div>
     <div class="d-sec">
       <div class="d-sec-title">Outreach History</div>
@@ -898,8 +897,66 @@ function openDetail(id){
         <button class="d-save-btn" onclick="addOutreach(${id})">+ Log Outreach</button>
       </div>
     </div>`;
-  document.getElementById('detail-panel').classList.add('open');
 }
+
+// Map detail field IDs to prospect properties
+const FIELD_MAP = {
+  'dp-stage':'stage','dp-pri':'priority','dp-admin':'targetAdmin','dp-contact':'contactDate',
+  'dp-name':'name','dp-alias':'alias','dp-pro':'pro','dp-genre':'genre','dp-ipi':'ipi','dp-location':'location',
+  'dp-spotify':'spotifyMonthly','dp-youtube':'youtubeViews',
+  'dp-spurl':'spotifyUrl','dp-ig':'instagram','dp-muso':'musoUrl','dp-genius':'geniusUrl','dp-twitter':'twitter',
+  'dp-notes':'notes'
+};
+
+async function saveDetailField(pid, inputId, val){
+  const p=prospects.find(x=>x.id===pid); if(!p) return;
+  // Find field key from inputId (strip the -ID suffix)
+  const key=Object.keys(FIELD_MAP).find(k=>inputId.startsWith(k+'-'));
+  if(!key) return;
+  const prop=FIELD_MAP[key];
+  p[prop]=val;
+  // Update header if name changed
+  if(prop==='name') document.getElementById('d-name').textContent=val;
+  if(prop==='alias') document.getElementById('d-alias').textContent=val?`pka ${val}`:'';
+  await dbSave(p);
+  renderAll();
+}
+
+function editSongInline(pid, songIdx, rowEl){
+  if(rowEl.querySelector('input')) return; // already editing
+  const p=prospects.find(x=>x.id===pid); if(!p) return;
+  const visible=(p.research?.songs||[]).filter(s=>s.year===0||s.year>=(new Date().getFullYear()-3)).sort((a,b)=>(b.spStreams||0)-(a.spStreams||0));
+  const s=visible[songIdx]; if(!s) return;
+  rowEl.innerHTML=`
+    <input class="d-inline-input" style="flex:2" value="${s.title}" id="se-title-${pid}-${songIdx}">
+    <input class="d-inline-input" style="width:50px" value="${s.year||''}" id="se-year-${pid}-${songIdx}" placeholder="Year">
+    <input class="d-inline-input" style="width:70px" value="${s.ytViews||''}" id="se-yt-${pid}-${songIdx}" placeholder="YT Views">
+    <input class="d-inline-input" style="width:70px" value="${s.spStreams||''}" id="se-sp-${pid}-${songIdx}" placeholder="Streams">
+    <button onclick="saveSongEdit(${pid},${songIdx})" style="font-family:var(--mono);font-size:8px;padding:2px 7px;background:none;border:1px solid var(--rule2);cursor:pointer">✓</button>
+    <button onclick="removeSong(${pid},${songIdx})" style="font-family:var(--mono);font-size:8px;padding:2px 5px;background:none;border:none;cursor:pointer;color:var(--ink5)">×</button>`;
+}
+
+async function saveSongEdit(pid, songIdx){
+  const p=prospects.find(x=>x.id===pid); if(!p) return;
+  const visible=(p.research?.songs||[]).filter(s=>s.year===0||s.year>=(new Date().getFullYear()-3)).sort((a,b)=>(b.spStreams||0)-(a.spStreams||0));
+  const s=visible[songIdx]; if(!s) return;
+  s.title=document.getElementById(`se-title-${pid}-${songIdx}`)?.value?.trim()||s.title;
+  s.year=parseInt(document.getElementById(`se-year-${pid}-${songIdx}`)?.value)||s.year;
+  s.ytViews=parseInt((document.getElementById(`se-yt-${pid}-${songIdx}`)?.value||'').replace(/[^0-9]/g,''))||s.ytViews;
+  s.spStreams=parseInt((document.getElementById(`se-sp-${pid}-${songIdx}`)?.value||'').replace(/[^0-9]/g,''))||s.spStreams;
+  await dbSave(p);
+  renderDetail(pid);
+}
+
+
+  const p=prospects.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('d-name').textContent=p.name;
+  document.getElementById('d-alias').textContent=p.alias?`pka ${p.alias}`:'';
+  document.getElementById('d-edit-btn').onclick=()=>{closeDetail();openEditModal(id);};
+  document.getElementById('d-del-btn').onclick=()=>delProspect(id);
+  document.getElementById('d-convert-btn').onclick=()=>convertToRoster(id);
+
 
 function closeDetail(){
   document.getElementById('detail-panel').classList.remove('open');
@@ -938,12 +995,113 @@ function convertToRoster(id){
   window.open(`index.html?prefill=1&${params.toString()}`, '_blank');
 }
 
+// ── AUTOFILL NAME FROM LINKS ─────────────────────────────────────────
+async function autofillFromLinks(){
+  const nameEl = document.getElementById('f-name');
+  if(!nameEl || nameEl.value.trim()) return; // don't overwrite if already filled
+
+  const spotifyUrl = document.getElementById('f-spotify-url')?.value.trim();
+  const musoUrl = document.getElementById('f-muso')?.value.trim();
+  const geniusUrl = document.getElementById('f-genius')?.value.trim();
+  const statusEl = document.getElementById('f-name-status');
+
+  // Try Spotify first (fastest, most reliable)
+  if(spotifyUrl && spotifyUrl.includes('spotify.com/artist') && getSpotifySecret()){
+    if(statusEl) statusEl.textContent = '⟳ Looking up…';
+    const data = await spotifyLookupArtist(spotifyUrl);
+    if(data?.name){
+      nameEl.value = data.name;
+      if(statusEl) statusEl.textContent = '✓ from Spotify';
+      if(document.getElementById('f-spotify') && !document.getElementById('f-spotify').value)
+        document.getElementById('f-spotify').value = data.followers || '';
+      return;
+    }
+  }
+
+  // Try extracting name from Muso URL pattern: credits.muso.ai/profile/UUID/credits
+  // Muso URLs don't contain the name, but page title would — skip for now
+
+  // Try Genius URL: genius.com/artists/artist-name
+  if(geniusUrl && geniusUrl.includes('genius.com')){
+    if(statusEl) statusEl.textContent = '⟳ Looking up…';
+    try {
+      const match = geniusUrl.match(/genius\.com\/artists\/([^/?#]+)/);
+      if(match){
+        const slug = match[1].replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+        nameEl.value = slug;
+        if(statusEl) statusEl.textContent = '✓ from Genius';
+        return;
+      }
+    } catch(e){}
+  }
+
+  // Try Spotify URL without API — parse artist name from URL isn't possible (just ID)
+  // Fall through: user fills name manually
+  if(statusEl) statusEl.textContent = '';
+}
+
+// ── AUTO-FILL NAME FROM LINKS ────────────────────────────────────────
+async function autoFillFromLinks(){
+  const nameEl = document.getElementById('f-name');
+  if(!nameEl || nameEl.value.trim()) return; // don't overwrite manual entry
+
+  const spotifyUrl = document.getElementById('f-spotify-url')?.value.trim()||'';
+  const musoUrl = document.getElementById('f-muso')?.value.trim()||'';
+  const geniusUrl = document.getElementById('f-genius')?.value.trim()||'';
+
+  let name = '';
+
+  // Try Spotify first (most reliable — uses API)
+  if(spotifyUrl.includes('spotify.com/artist') && getSpotifySecret()){
+    const data = await spotifyLookupArtist(spotifyUrl);
+    if(data?.name) name = data.name;
+  }
+
+  // Try Genius URL (parse name from URL path)
+  if(!name && geniusUrl.includes('genius.com')){
+    // e.g. https://genius.com/artists/drake → "Drake"
+    const m = geniusUrl.match(/genius\.com\/artists\/([^/?#]+)/);
+    if(m) name = m[1].replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  }
+
+  // Try Muso URL (parse name from page title via iframe)
+  if(!name && musoUrl.includes('muso.ai')){
+    name = await new Promise(resolve=>{
+      const fr = document.createElement('iframe');
+      fr.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0';
+      fr.src = musoUrl;
+      let done = false;
+      fr.onload = () => {
+        if(done) return; done = true;
+        try{
+          const title = fr.contentDocument?.title||'';
+          // Title format: "Artist Name - Credits | Muso"
+          const m = title.match(/^(.+?)\s*[-|]/);
+          resolve(m ? m[1].trim() : '');
+        }catch(e){ resolve(''); }
+        fr.remove();
+      };
+      fr.onerror = () => { if(!done){done=true;resolve('');fr.remove();} };
+      document.body.appendChild(fr);
+      setTimeout(()=>{ if(!done){done=true;resolve('');try{fr.remove();}catch(e){}} }, 6000);
+    });
+  }
+
+  if(name){
+    nameEl.value = name;
+    const hint = document.getElementById('f-name-autofill-hint');
+    if(hint) hint.style.display = 'inline';
+  }
+}
+
 function openAddModal(){
   editingId=null;
   clearForm();
   document.getElementById('modal-title').textContent='Add Prospect';
   document.getElementById('modal-del-btn').style.display='none';
   document.getElementById('modal-overlay').classList.add('open');
+  const st = document.getElementById('f-name-status');
+  if(st) st.textContent='';
 }
 
 function openEditModal(id){
@@ -965,6 +1123,7 @@ function openEditModal(id){
   document.getElementById('f-instagram').value=p.instagram||'';
   document.getElementById('f-twitter').value=p.twitter||'';
   document.getElementById('f-spotify').value=p.spotifyMonthly||'';
+  if(document.getElementById('f-spotify-url')) document.getElementById('f-spotify-url').value=p.spotifyUrl||p.research?.spotifyUrl||'';
   document.getElementById('f-youtube').value=p.youtubeViews||'';
   document.getElementById('f-muso').value=p.musoUrl||'';
   document.getElementById('f-genius').value=p.geniusUrl||'';
@@ -986,6 +1145,12 @@ function closeModal(){document.getElementById('modal-overlay').classList.remove(
 async function saveProspect(){
   const name=document.getElementById('f-name').value.trim();
   if(!name){alert('Name is required.');return;}
+  const spotifyUrl = document.getElementById('f-spotify-url')?.value.trim()||'';
+  const musoUrl = document.getElementById('f-muso').value.trim();
+  const geniusUrl = document.getElementById('f-genius').value.trim();
+  // Build source links for research card
+  const sourceLinks = [spotifyUrl, musoUrl, geniusUrl].filter(Boolean);
+
   const data={
     name, alias:document.getElementById('f-alias').value.trim(),
     pro:document.getElementById('f-pro').value,
@@ -1000,8 +1165,7 @@ async function saveProspect(){
     twitter:document.getElementById('f-twitter').value.trim(),
     spotifyMonthly:document.getElementById('f-spotify').value.trim(),
     youtubeViews:document.getElementById('f-youtube').value.trim(),
-    musoUrl:document.getElementById('f-muso').value.trim(),
-    geniusUrl:document.getElementById('f-genius').value.trim(),
+    musoUrl, geniusUrl, spotifyUrl,
     notes:document.getElementById('f-notes').value.trim(),
   };
   let saved;
@@ -1017,22 +1181,54 @@ async function saveProspect(){
     toast('Added',`${name} added to pipeline.`);
   }
   closeModal();
-  // If Spotify tracks were pending from auto-lookup, seed them now
+
+  // Seed research data from form links
+  if(!saved.research) saved.research = {};
+  if(!saved.research.igSnapshots) saved.research.igSnapshots = [];
+  if(!saved.research.igPeriod) saved.research.igPeriod = '1m';
+  if(!saved.research.songs) saved.research.songs = [];
+
+  // Add source links from form (don't duplicate)
+  if(!saved.research.sourceLinks) saved.research.sourceLinks = [];
+  sourceLinks.forEach(url => {
+    if(url && !saved.research.sourceLinks.includes(url))
+      saved.research.sourceLinks.push(url);
+  });
+
+  // If Spotify URL provided, auto-pull top songs in background
+  if(spotifyUrl && spotifyUrl.includes('spotify.com/artist') && !editingId){
+    saved.research.spotifyUrl = spotifyUrl;
+    if(getSpotifySecret()){
+      // Non-blocking — pull in background after save
+      setTimeout(async()=>{
+        const data = await spotifyLookupArtist(spotifyUrl);
+        if(data && data.tracks){
+          saved.research.spFollowers = data.followers;
+          data.tracks.forEach(t => {
+            if(!saved.research.songs.find(s=>s.title===t.title)){
+              saved.research.songs.push({title:t.title,year:t.year,ytViews:0,spStreams:0,trackId:t.trackId||''});
+            }
+          });
+          await dbSave(saved);
+          renderResearch();
+        }
+      }, 500);
+    }
+  }
+
+  // Old pending tracks path (from openAddResearchFlow)
   if(window._pendingSpotifyTracks && !editingId){
     const pt = window._pendingSpotifyTracks;
-    if(!saved.research) saved.research = {};
     saved.research.spotifyUrl = pt.url;
-    saved.research.igSnapshots = saved.research.igSnapshots || [];
-    saved.research.songs = saved.research.songs || [];
-    // Add Spotify followers as first IG-style snapshot under a separate key
     saved.research.spFollowers = pt.followers;
     pt.tracks.forEach(t => {
       if(!saved.research.songs.find(s => s.title === t.title)){
-        saved.research.songs.push({title:t.title, year:t.year, ytViews:0, spStreams:0, spPopularity:t.spStreams});
+        saved.research.songs.push({title:t.title, year:t.year, ytViews:0, spStreams:0});
       }
     });
     window._pendingSpotifyTracks = null;
   }
+
   renderAll();
   await dbSave(saved);
 }
