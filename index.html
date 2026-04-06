@@ -1541,8 +1541,8 @@ function mths(d){ return (TODAY - new Date(d))/(30.44*86400000); }
 function days(d){ return (TODAY - new Date(d))/86400000; }
 
 function runPeriodStr(label, year){
-  if(label==='Q4-Q1') return `Q4 ${year} – Q1 ${year+1}`;
-  return `Q2 ${year} – Q3 ${year}`;
+  if(label==='Q3-Q4') return `Q3-Q4 ${year} (Jul–Dec) · due Apr ${year+1}`;
+  return `Q1-Q2 ${year} (Jan–Jun) · due Nov ${year}`;
 }
 function fmtD(d){ if(!d) return '—'; try{ return new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }catch(e){ return '—'; } }
 function ago(d){
@@ -1809,10 +1809,10 @@ function renderCustomTrackerKey(){
   }).join('');
 }
 
-// Statement run: Q4-Q1 (Oct–Mar) vs Q2-Q3 (Apr–Sep) — manually set, persisted
-const _autoRun = (TODAY.getMonth()+1 >= 10 || TODAY.getMonth()+1 <= 3)
-  ? {qs:[4,1], label:'Q4-Q1'}
-  : {qs:[2,3], label:'Q2-Q3'};
+// Statement run: Q3-Q4 (Jul–Dec, due Apr following yr) vs Q1-Q2 (Jan–Jun, due Nov)
+const _autoRun = (TODAY.getMonth()+1 >= 7)
+  ? {qs:[3,4], label:'Q3-Q4'}
+  : {qs:[1,2], label:'Q1-Q2'};
 const _savedRunRaw = localStorage.getItem('stmtRun');
 let STMT_RUN;
 if(_savedRunRaw){
@@ -1822,15 +1822,15 @@ if(_savedRunRaw){
   } catch(e) {
     // legacy string format
     const _yr = TODAY.getFullYear();
-    const _legRunYr = (_savedRunRaw==='Q4-Q1' && (TODAY.getMonth()+1)<=3) ? _yr-1 : _yr;
-    STMT_RUN = _savedRunRaw==='Q4-Q1'
-      ? {qs:[4,1], label:'Q4-Q1', year:_legRunYr}
-      : {qs:[2,3], label:'Q2-Q3', year:_yr};
+    const _legRunYr = (_savedRunRaw==='Q3-Q4' && (TODAY.getMonth()+1)<=6) ? _yr-1 : _yr;
+    STMT_RUN = _savedRunRaw==='Q3-Q4'
+      ? {qs:[3,4], label:'Q3-Q4', year:_legRunYr}
+      : {qs:[1,2], label:'Q1-Q2', year:_yr};
   }
 } else {
   const _yr = TODAY.getFullYear();
   // Q4-Q1 run year = year Q4 started: if Jan-Mar, Q4 was last year
-  const _runYr = (_autoRun.qs[0]===4 && (TODAY.getMonth()+1)<=3) ? _yr-1 : _yr;
+  const _runYr = (_autoRun.qs[0]===3 && (TODAY.getMonth()+1)<=6) ? _yr-1 : _yr;
   STMT_RUN = {qs:_autoRun.qs, label:_autoRun.label, year:_runYr};
 }
 let pendingAdvanceUnsent = []; // writers not yet sent, shown in alerts during advance warning
@@ -1864,8 +1864,8 @@ function advanceStmtRun(){
   // Q4-Q1 (year Y) → Q2-Q3 (year Y+1);  Q2-Q3 (year Y) → Q4-Q1 (year Y)
   const nextYear = STMT_RUN.qs[0]===4 ? STMT_RUN.year+1 : STMT_RUN.year;
   const nextRun = STMT_RUN.qs[0]===4
-    ? {qs:[2,3], label:'Q2-Q3', year:nextYear}
-    : {qs:[4,1], label:'Q4-Q1', year:nextYear};
+    ? {qs:[2,3], label:'Q1-Q2', year:nextYear}
+    : {qs:[4,1], label:'Q3-Q4', year:nextYear};
   const nextPeriodStr = runPeriodStr(nextRun.label, nextRun.year);
 
   // Find unsent writers
@@ -3304,27 +3304,27 @@ function renderDetailTracking(id, w){
     <div class="d-sec">
       <div class="d-sec-title">Statement Tracking</div>
       <div class="q-item">
-        <div class="q-item-lbl">Q4-Q1 (Oct – Mar)</div>
+        <div class="q-item-lbl">Q3-Q4 (Jul – Dec) <span style="font-family:var(--mono);font-size:8px;color:var(--ink5)">— due Apr</span></div>
         <div class="toggle-row"><span>Received from company</span><label class="tck"><input type="checkbox" ${(w.stmtRecv.q4&&w.stmtRecv.q1)?'checked':''} onchange="toggleRun(${id},'recv','run1',this.checked)"><span class="tck-circle">✓</span></label></div>
-        ${(w.stmtRecv.q4&&w.stmtRecv.q1)?`<div class="d-date-row" style="margin-left:4px">
+        ${(w.stmtRecv.q3&&w.stmtRecv.q4)?`<div class="d-date-row" style="margin-left:4px">
           <input class="d-date-input" type="date" id="d-recv1-date-${id}" value="${w.stmtRecvDate1||''}" max="${TODAY_STR}">
           <button class="d-date-save" onclick="saveStmtDate(${id},'stmtRecvDate1','d-recv1-date-${id}')">Save</button>
         </div>`:''}
         <div class="toggle-row"><span>Sent to client</span><label class="tck"><input type="checkbox" ${(w.stmtSent.q4&&w.stmtSent.q1)?'checked':''} onchange="toggleRun(${id},'sent','run1',this.checked)"><span class="tck-circle">✓</span></label></div>
-        ${(w.stmtSent.q4&&w.stmtSent.q1)?`<div class="d-date-row" style="margin-left:4px">
+        ${(w.stmtSent.q3&&w.stmtSent.q4)?`<div class="d-date-row" style="margin-left:4px">
           <input class="d-date-input" type="date" id="d-sent1-date-${id}" value="${w.stmtSentDate1||w.stmtSentDate||''}" max="${TODAY_STR}">
           <button class="d-date-save" onclick="saveStmtDate(${id},'stmtSentDate1','d-sent1-date-${id}')">Save</button>
         </div>`:''}
       </div>
       <div class="q-item">
-        <div class="q-item-lbl">Q2-Q3 (Apr – Sep)</div>
+        <div class="q-item-lbl">Q1-Q2 (Jan – Jun) <span style="font-family:var(--mono);font-size:8px;color:var(--ink5)">— due Nov</span></div>
         <div class="toggle-row"><span>Received from company</span><label class="tck"><input type="checkbox" ${(w.stmtRecv.q2&&w.stmtRecv.q3)?'checked':''} onchange="toggleRun(${id},'recv','run2',this.checked)"><span class="tck-circle">✓</span></label></div>
-        ${(w.stmtRecv.q2&&w.stmtRecv.q3)?`<div class="d-date-row" style="margin-left:4px">
+        ${(w.stmtRecv.q1&&w.stmtRecv.q2)?`<div class="d-date-row" style="margin-left:4px">
           <input class="d-date-input" type="date" id="d-recv2-date-${id}" value="${w.stmtRecvDate2||''}" max="${TODAY_STR}">
           <button class="d-date-save" onclick="saveStmtDate(${id},'stmtRecvDate2','d-recv2-date-${id}')">Save</button>
         </div>`:''}
         <div class="toggle-row"><span>Sent to client</span><label class="tck"><input type="checkbox" ${(w.stmtSent.q2&&w.stmtSent.q3)?'checked':''} onchange="toggleRun(${id},'sent','run2',this.checked)"><span class="tck-circle">✓</span></label></div>
-        ${(w.stmtSent.q2&&w.stmtSent.q3)?`<div class="d-date-row" style="margin-left:4px">
+        ${(w.stmtSent.q1&&w.stmtSent.q2)?`<div class="d-date-row" style="margin-left:4px">
           <input class="d-date-input" type="date" id="d-sent2-date-${id}" value="${w.stmtSentDate2||''}" max="${TODAY_STR}">
           <button class="d-date-save" onclick="saveStmtDate(${id},'stmtSentDate2','d-sent2-date-${id}')">Save</button>
         </div>`:''}
@@ -3392,7 +3392,7 @@ async function toggleRun(id,type,run,val){
     // legacy flat field
     if(val && !w.stmtSentDate) w.stmtSentDate=TODAY_STR;
   }
-  const qs = run==='run1' ? [4,1] : [2,3];
+  const qs = run==='run1' ? [3,4] : [1,2];
   qs.forEach(q=>{ if(type==='recv') w.stmtRecv[`q${q}`]=val; else w.stmtSent[`q${q}`]=val; });
   refreshDetail(id); await dbSave(w);
 }
