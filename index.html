@@ -1359,7 +1359,7 @@ body.dark .d-tab.on{border-bottom-color:var(--gold-border);color:var(--gold-bord
       <div class="form-field"><label class="form-label">IPI Number</label><input class="form-input" id="f-ipi" type="text" placeholder="e.g. 00123456789"></div>
       <div class="form-field">
         <label class="form-label">Status</label>
-        <select class="form-select" id="f-status">
+        <select class="form-select" id="f-status" onchange="toggleRetentionFields(this.value)">
           <option value="active">Active</option>
           <option value="retention">Retention</option>
           <option value="terminated">Terminated</option>
@@ -1386,6 +1386,23 @@ body.dark .d-tab.on{border-bottom-color:var(--gold-border);color:var(--gold-bord
       <div class="form-field" style="display:flex;align-items:center;gap:10px;padding-top:4px">
         <label class="tck"><input type="checkbox" id="f-contract-autorenew"><span class="tck-circle">✓</span></label>
         <span class="form-label" style="margin:0">Contract auto-renews</span>
+      </div>
+    </div>
+
+    <div class="form-row" id="retention-dates-row" style="display:none">
+      <div class="form-field">
+        <label class="form-label" style="color:var(--amber)">Retention Start Date</label>
+        <input class="form-input" id="f-retention-start" type="date">
+      </div>
+      <div class="form-field">
+        <label class="form-label" style="color:var(--amber)">Retention End Date</label>
+        <input class="form-input" id="f-retention-end" type="date">
+      </div>
+    </div>
+    <div class="form-row" id="retention-autorenew-row" style="display:none">
+      <div class="form-field" style="display:flex;align-items:center;gap:10px;padding-top:4px">
+        <label class="tck"><input type="checkbox" id="f-retention-autorenew"><span class="tck-circle">✓</span></label>
+        <span class="form-label" style="margin:0;color:var(--amber)">Retention auto-renews</span>
       </div>
     </div>
 
@@ -2877,6 +2894,14 @@ function clearForm(){
   ['f-splits-missing','f-splits-outreach'].forEach(id=>document.getElementById(id).checked=false);
   [1,2,3,4].forEach(q=>{ document.getElementById(`f-stmt-recv-q${q}`).checked=false; document.getElementById(`f-stmt-sent-q${q}`).checked=false; });
 }
+function toggleRetentionFields(status){
+  const show = status === 'retention';
+  const r1 = document.getElementById('retention-dates-row');
+  const r2 = document.getElementById('retention-autorenew-row');
+  if(r1) r1.style.display = show ? '' : 'none';
+  if(r2) r2.style.display = show ? '' : 'none';
+}
+
 function openAddModal(){ editingId=null; clearForm(); document.getElementById('modal-title').textContent='Add Writer'; document.getElementById('modal-del-btn').style.display='none'; document.getElementById('modal-overlay').classList.add('open'); document.querySelector('.modal').scrollTop=0; }
 function openEdit(id){
   editingId=id; const w=writers.find(x=>x.id===id);
@@ -2893,6 +2918,10 @@ function openEdit(id){
   if(document.getElementById('f-contract-start')) document.getElementById('f-contract-start').value=w.contractStart||'';
   if(document.getElementById('f-contract-end')) document.getElementById('f-contract-end').value=w.contractEnd||'';
   if(document.getElementById('f-contract-autorenew')) document.getElementById('f-contract-autorenew').checked=w.contractAutoRenew||false;
+  if(document.getElementById('f-retention-start')) document.getElementById('f-retention-start').value=w.retentionStart||'';
+  if(document.getElementById('f-retention-end')) document.getElementById('f-retention-end').value=w.retentionEnd||'';
+  if(document.getElementById('f-retention-autorenew')) document.getElementById('f-retention-autorenew').checked=w.retentionAutoRenew||false;
+  toggleRetentionFields(w.status||'active');
   document.getElementById('f-scheduleA').value=w.scheduleA||'';
   document.getElementById('f-auditCompleted').value=w.auditCompleted||'';
   document.getElementById('f-auditSent').value=w.auditSent||'';
@@ -2911,7 +2940,7 @@ async function saveWriter(){
   if(!name){ alert('Writer name is required.'); return; }
   const sR={},sS={};
   [1,2,3,4].forEach(q=>{ sR[`q${q}`]=document.getElementById(`f-stmt-recv-q${q}`).checked; sS[`q${q}`]=document.getElementById(`f-stmt-sent-q${q}`).checked; });
-  const data={name,alias:document.getElementById('f-alias').value.trim(),ipi:document.getElementById('f-ipi').value.trim(),pro:document.getElementById('f-pro').value,company:document.getElementById('f-company').value.trim()||'Unassigned',admin:document.getElementById('f-admin').value.trim()||'Unassigned',genre:document.getElementById('f-genre').value,status:document.getElementById('f-status').value,location:document.getElementById('f-location')?.value.trim()||'',contractStart:document.getElementById('f-contract-start')?.value||'',contractEnd:document.getElementById('f-contract-end')?.value||'',contractAutoRenew:document.getElementById('f-contract-autorenew')?.checked||false,scheduleA:document.getElementById('f-scheduleA').value||'',auditCompleted:document.getElementById('f-auditCompleted').value||'',auditSent:document.getElementById('f-auditSent').value||'',splitsMissing:document.getElementById('f-splits-missing').checked,splitsOutreach:document.getElementById('f-splits-outreach').checked,stmtRecv:sR,stmtSent:sS,geniusUrl:document.getElementById('f-genius').value.trim(),musoUrl:document.getElementById('f-muso').value.trim()};
+  const data={name,alias:document.getElementById('f-alias').value.trim(),ipi:document.getElementById('f-ipi').value.trim(),pro:document.getElementById('f-pro').value,company:document.getElementById('f-company').value.trim()||'Unassigned',admin:document.getElementById('f-admin').value.trim()||'Unassigned',genre:document.getElementById('f-genre').value,status:document.getElementById('f-status').value,location:document.getElementById('f-location')?.value.trim()||'',contractStart:document.getElementById('f-contract-start')?.value||'',contractEnd:document.getElementById('f-contract-end')?.value||'',contractAutoRenew:document.getElementById('f-contract-autorenew')?.checked||false,scheduleA:document.getElementById('f-scheduleA').value||'',auditCompleted:document.getElementById('f-auditCompleted').value||'',auditSent:document.getElementById('f-auditSent').value||'',splitsMissing:document.getElementById('f-splits-missing').checked,splitsOutreach:document.getElementById('f-splits-outreach').checked,stmtRecv:sR,stmtSent:sS,geniusUrl:document.getElementById('f-genius').value.trim(),musoUrl:document.getElementById('f-muso').value.trim(),retentionStart:document.getElementById('f-retention-start')?.value||'',retentionEnd:document.getElementById('f-retention-end')?.value||'',retentionAutoRenew:document.getElementById('f-retention-autorenew')?.checked||false};
   let saved;
   if(editingId){ const i=writers.findIndex(w=>w.id===editingId); writers[i]={...writers[i],...data}; saved=writers[i]; toast('Writer Updated',`${name} has been updated.`); }
   else{ const w={id:nextId++,...data}; writers.push(w); saved=w; toast('Writer Added',`${name} added to the roster.`); }
@@ -2993,17 +3022,27 @@ function renderDetailBio(id, w){
             <span style="font-family:var(--mono);font-size:10px;color:${w.status==='active'?'var(--green)':w.status==='terminated'?'var(--red)':'var(--amber)'}">${w.status==='active'?'● Active':w.status==='terminated'?'● Terminated':'● Retention'}</span>
           </div>
         </div>
-        <div style="display:flex;gap:32px;flex-wrap:wrap;margin-top:4px">
-          <div>
-            <div class="d-k">Start Date</div>
-            <div class="d-v" style="font-family:var(--mono);font-size:11px">${w.contractStart?fmtDate(w.contractStart):'—'}</div>
+        <div style="display:flex;flex-direction:column;gap:0;margin-top:8px">
+          <!-- Header row -->
+          <div style="display:grid;grid-template-columns:90px 1fr 1fr;gap:0;margin-bottom:8px">
+            <div></div>
+            <div class="d-k" style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase">Start Date</div>
+            <div class="d-k" style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase">End Date</div>
           </div>
-          <div>
-            <div class="d-k">End Date</div>
-            <div class="d-v" style="font-family:var(--mono);font-size:11px">${autoRenew?'<span style=\'color:var(--green)\'>↻ Auto-renews</span>':w.contractEnd?fmtDate(w.contractEnd):'—'}</div>
+          <!-- Active / Term row -->
+          <div style="display:grid;grid-template-columns:90px 1fr 1fr;gap:0;padding:6px 0;${w.status==='retention'?'opacity:0.4':''}">
+            <div class="d-k" style="padding-top:1px">${w.status==='retention'?'Term':'Active'}</div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--ink)">${w.contractStart?fmtDate(w.contractStart):'—'}</div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--ink)">${w.contractEnd?fmtDate(w.contractEnd):autoRenew&&w.status!=='retention'?'<span style=\'color:var(--green)\'>↻ Auto-renews</span>':'—'}</div>
           </div>
+          <!-- Retention row -->
+          <div style="display:grid;grid-template-columns:90px 1fr 1fr;gap:0;padding:6px 0;${w.status!=='retention'?'opacity:0.3':''}">
+            <div class="d-k" style="padding-top:1px;color:${w.status==='retention'?'var(--amber)':'var(--ink4)'}">Retention</div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--ink)">${w.status==='retention'&&w.retentionStart?fmtDate(w.retentionStart):'—'}</div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--ink)">${w.status==='retention'?(w.retentionAutoRenew?'<span style=\'color:var(--green)\'>↻ Auto-renews</span>':w.retentionEnd?fmtDate(w.retentionEnd):'—'):'—'}</div>
+          </div>
+          ${w.contractStart?`<div style="margin-top:4px;font-family:var(--mono);font-size:9px;color:var(--ink4)">${contractDuration(w)}</div>`:''}
         </div>
-        ${w.contractStart?`<div style="margin-top:4px;font-family:var(--mono);font-size:9px;color:var(--ink4)">${contractDuration(w)}</div>`:''}
       </div>
     </div>
     <div class="d-sec">
