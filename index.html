@@ -3108,7 +3108,7 @@ function renderDetailBio(id, w){
 
       </div>
       <div id="contract-status-${id}" style="margin-top:6px">
-        <span style="font-family:var(--mono);font-size:10px;color:${w.status==='active'?'var(--green)':w.status==='option'?'var(--blue)':w.status==='terminated'?'var(--red)':'var(--amber)'}">● ${w.status==='active'?'Active':w.status==='option'?'Active (Option Period)':w.status==='terminated'?'Terminated':'Retention'}</span>
+        ${contractStatusBadge(w)}
       </div>
       <div id="contract-detail-${id}" style="display:none;margin-top:10px">
         <div style="font-family:var(--mono);font-size:8px;color:var(--ink5);margin-bottom:10px;display:flex;justify-content:flex-end">
@@ -3402,6 +3402,22 @@ function submitModalContractPw(){
   if(lock) lock.style.display='none';
 }
 
+function contractStatusBadge(w){
+  var now = new Date();
+  var start = w.contractStart ? new Date(w.contractStart) : null;
+  var termYrs = parseFloat(w.termLength)||0;
+  var termEnd = null;
+  if(start && termYrs){
+    termEnd = new Date(start);
+    termEnd.setFullYear(termEnd.getFullYear()+Math.floor(termYrs));
+    termEnd.setDate(termEnd.getDate()+Math.round((termYrs%1)*365));
+  }
+  var isOption = (w.status==='option') || (w.status==='active' && termEnd && now>termEnd && w.contractAutoRenew && !w.unrecouped);
+  var color = w.status==='terminated'?'var(--red)':w.status==='retention'?'var(--amber)':' var(--green)';
+  var label = w.status==='terminated'?'Terminated':w.status==='retention'?'Retention':isOption?'Active — Option Period':'Active';
+  return '<span style="font-family:var(--mono);font-size:10px;color:'+color+'">&#9679; '+label+'</span>';
+}
+
 function buildContractDetail(w, id){
   var now = new Date();
   var start = w.contractStart ? new Date(w.contractStart) : null;
@@ -3413,7 +3429,8 @@ function buildContractDetail(w, id){
     termEnd.setDate(termEnd.getDate()+Math.round((termYrs%1)*365));
   }
   var pastTerm = termEnd && now > termEnd;
-  var inOption = w.status === 'option';
+  // Auto-detect option period: past initial term, auto-renews, recouped
+  var inOption = w.status === 'option' || (pastTerm && w.contractAutoRenew && !w.unrecouped && w.status === 'active');
   var inRetention = w.status === 'retention';
   var retStart = w.optionEndDate ? new Date(w.optionEndDate) : w.recoupDate ? new Date(w.recoupDate) : termEnd;
   var retYrs = parseFloat(w.retentionLength)||0;
@@ -3429,23 +3446,25 @@ function buildContractDetail(w, id){
 
   var h = '<div style="display:flex;flex-direction:column;font-family:var(--mono);font-size:10px">';
   h += row('Start date', d2s(w.contractStart));
-  h += row('Term end', termEnd ? d2s(termEnd) : w.unrecouped ? col('Open — Un-recouped','var(--amber)') : '—');
-  if(w.contractAutoRenew || w.unrecouped || inOption){
-    h += row('Initial term', termYrs ? termYrs+'yr' : '—');
-  }
+  // Term end: show Auto-renews if auto-renewing, open if unrecouped, else date
+  var termEndVal = w.contractAutoRenew && !w.unrecouped
+    ? col('&#8635; Auto-renews','var(--green)')
+    : w.unrecouped
+      ? col('Open — Un-recouped','var(--amber)')
+      : termEnd ? d2s(termEnd) : '—';
+  h += row('Term end', termEndVal);
+  h += row('Initial term', termYrs ? termYrs+'yr' : '—');
   h += row('Retention length', retYrs ? retYrs+'yr' : '—');
-  if(w.contractAutoRenew){
-    var arVal = w.unrecouped ? col('Yes — not in effect until recouped','var(--ink4)')
-      : inOption ? col('Yes — in option period','var(--blue)')
-      : col('Yes','var(--green)');
-    h += row('Auto-renews', arVal);
+  // Only show auto-renews row when un-recouped (term end already shows it otherwise)
+  if(w.contractAutoRenew && w.unrecouped){
+    h += row('Auto-renews', col('Not in effect until recouped','var(--ink4)'));
   }
   if(pastTerm && w.unrecouped){
     h += '<div style="display:flex;gap:12px;padding:6px 8px;margin-top:4px;background:rgba(160,85,10,0.08);border-left:2px solid var(--amber)">';
     h += '<span style="color:var(--amber);min-width:130px">Un-recouped</span>';
     h += '<span style="color:var(--amber)">'+(w.buyoutPct ? w.buyoutPct+'% buyout to terminate' : 'No buyout % set')+'</span></div>';
   }
-  if(inOption && w.contractAutoRenew){
+  if(inOption){
     h += '<div style="display:flex;gap:12px;padding:6px 8px;margin-top:4px;background:rgba(26,100,180,0.07);border-left:2px solid var(--blue)">';
     h += '<span style="color:var(--blue);min-width:130px">Option period</span><span style="color:var(--blue)">Active</span></div>';
     var today = new Date().toISOString().split('T')[0];
