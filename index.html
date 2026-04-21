@@ -1334,6 +1334,15 @@ body.dark .d-tab.on{border-bottom-color:var(--gold-border);color:var(--gold-bord
       <div class="side-title">PRO Affiliation</div>
       <div id="pro-breakdown"></div>
     </div>
+
+    <!-- Publisher Reference -->
+    <div class="side-card">
+      <div class="side-title" style="display:flex;justify-content:space-between;align-items:center">
+        Publisher IPI
+        <button onclick="openPubRefEditor()" style="font-family:var(--mono);font-size:8px;padding:2px 8px;background:none;border:1px solid var(--rule2);color:var(--ink4);cursor:pointer">Edit</button>
+      </div>
+      <div id="pub-ref-display"></div>
+    </div>
   </div>
 </div>
 
@@ -1501,6 +1510,19 @@ body.dark .d-tab.on{border-bottom-color:var(--gold-border);color:var(--gold-bord
 const TODAY = new Date();
 TODAY.setHours(0,0,0,0);
 const TODAY_STR = TODAY.toLocaleDateString('en-CA');
+
+// ── COMPANY PRO PUBLISHER REFERENCE ───────────────────────────────────
+// Quick reference: publisher names and IPI numbers per company
+// Format: CO_PRO_INFO[company] = ['ASCAP: NAME · IPI', 'BMI: NAME · IPI']
+const CO_PRO_INFO = {
+  'PAQ': [
+    'ASCAP: PAQPUNCHSONGS · 1066981819',
+    'BMI: PAQ PAQ MUSIC',
+  ],
+  // 'Other Company': ['ASCAP: NAME · IPI'],
+};
+
+
 
 // ── SOLAR AUTO DARK MODE ─────────────────────────────────────────────
 // Latitude/longitude for Chicago, IL
@@ -2315,7 +2337,7 @@ function renderTable(){
         ${w.alias?`<div class="walias">pka ${w.alias}</div>`:''}
       </td>
       <td><span class="pro-badge">${w.pro||'—'}</span></td>
-      <td><div class="cname">${w.company}</div><div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-top:2px">${w.genre}</div></td>
+      <td><div class="cname">${w.company}</div><div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-top:1px">${w.genre}</div></td>
       <td><div class="aname"><span class="adm-dot"></span>${w.admin}</div></td>
       <td>${saC}</td>
       <td>${acC}</td>
@@ -2487,7 +2509,7 @@ function renderAdmins(){
     </div>`).join('');
 }
 
-function renderAll(){ populateDropdowns(); renderTable(); renderCards(); renderStats(); renderAlerts(); renderPRO(); renderAdmins(); renderKeyPeriod(); renderUnsentCount(); }
+function renderAll(){ populateDropdowns(); renderTable(); renderCards(); renderStats(); renderAlerts(); renderPRO(); renderAdmins(); renderKeyPeriod(); renderUnsentCount(); renderPubRef(); }
 function renderKeyPeriod(){
   const sel = document.getElementById('key-period-label');
   if(!sel) return;
@@ -2977,6 +2999,8 @@ function openEdit(id){
   const _br=document.getElementById('buyout-row'); if(_br) _br.style.display=(w.unrecouped)?'':'none';
   if(document.getElementById('f-retention-length')) document.getElementById('f-retention-length').value=w.retentionLength||'';
   if(document.getElementById('f-retention-autorenew')) document.getElementById('f-retention-autorenew').checked=w.retentionAutoRenew||false;
+  document.getElementById('f-genius').value=w.geniusUrl||'';
+  document.getElementById('f-muso').value=w.musoUrl||'';
   toggleRetentionFields(w.status||'active');
   // Always lock contract fields when opening edit modal
   const _mcf2 = document.getElementById('modal-contract-fields');
@@ -3902,6 +3926,89 @@ document.addEventListener('click', function(e) {
     closeDetail();
   }
 });
+
+// ── PUBLISHER IPI REFERENCE ────────────────────────────────────────────
+// Stored as array of {company, pro, publisherName, ipi}
+
+
+function getPubRefs(){
+  try { return JSON.parse(localStorage.getItem('paq-pub-refs')||'[]'); } catch(e){ return []; }
+}
+function savePubRefs(refs){ localStorage.setItem('paq-pub-refs', JSON.stringify(refs)); }
+
+function renderPubRef(){
+  const refs = getPubRefs();
+  const el = document.getElementById('pub-ref-display');
+  if(!el) return;
+  if(!refs.length){
+    el.innerHTML = '<div style="font-family:var(--mono);font-size:9px;color:var(--ink5);padding:4px 0">No entries yet — click Edit to add.</div>';
+    return;
+  }
+  el.innerHTML = refs.map(r =>
+    '<div style="padding:4px 0;border-bottom:1px solid var(--rule)">' +
+    '<div style="font-family:var(--mono);font-size:9px;color:var(--ink2)">' + (r.company||'') + '</div>' +
+    '<div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-top:1px">' +
+    (r.pro ? r.pro + ' · ' : '') + (r.publisherName||'') +
+    (r.ipi ? ' · <span style="color:var(--ink3)">' + r.ipi + '</span>' : '') +
+    '</div></div>'
+  ).join('');
+}
+
+function openPubRefEditor(){
+  document.getElementById('accolade-modal')?.remove();
+  const refs = getPubRefs();
+  const ov = document.createElement('div');
+  ov.id = 'accolade-modal';
+  ov.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center';
+
+  function renderEditor(){
+    const rows = getPubRefs();
+    ov.innerHTML = '<div style="background:var(--paper);border:1px solid var(--rule);width:460px;max-width:95vw;max-height:80vh;overflow-y:auto;padding:24px;font-family:var(--mono)">' +
+      '<div style="font-size:9px;letter-spacing:2px;color:var(--ink4);margin-bottom:16px;text-transform:uppercase">Publisher IPI Reference</div>' +
+      rows.map((r,i) =>
+        '<div style="display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--rule)">' +
+        '<input placeholder="Company" value="'+(r.company||'')+'" data-idx="'+i+'" data-key="company" oninput="pqUpdateRef(+this.dataset.idx,this.dataset.key,this.value)" style="font-family:var(--mono);font-size:9px;padding:3px 6px;border:none;border-bottom:1px solid var(--rule2);background:none;width:100px;color:var(--ink);outline:none">' +
+        '<select data-idx="'+i+'" data-key="pro" onchange="pqUpdateRef(+this.dataset.idx,this.dataset.key,this.value)" style="font-family:var(--mono);font-size:9px;padding:3px;border:none;border-bottom:1px solid var(--rule2);background:none;color:var(--ink);outline:none">' +
+        ['ASCAP','BMI','SESAC','PRS',''].map(p => '<option value="'+p+'" '+(r.pro===p?'selected':'')+'>'+( p||'PRO')+' </option>').join('') +
+        '</select>' +
+        '<input placeholder="Publisher Name" value="'+(r.publisherName||'')+'" data-idx="'+i+'" data-key="publisherName" oninput="pqUpdateRef(+this.dataset.idx,this.dataset.key,this.value)" style="font-family:var(--mono);font-size:9px;padding:3px 6px;border:none;border-bottom:1px solid var(--rule2);background:none;flex:1;color:var(--ink);outline:none">' +
+        '<input placeholder="IPI #" value="'+(r.ipi||'')+'" data-idx="'+i+'" data-key="ipi" oninput="pqUpdateRef(+this.dataset.idx,this.dataset.key,this.value)" style="font-family:var(--mono);font-size:9px;padding:3px 6px;border:none;border-bottom:1px solid var(--rule2);background:none;width:90px;color:var(--ink);outline:none">' +
+        '<button onclick="pqRemoveRef('+i+')" style="background:none;border:none;cursor:pointer;color:var(--ink5);font-size:11px;padding:0 4px">×</button>' +
+        '</div>'
+      ).join('') +
+      '<div style="display:flex;gap:8px;margin-top:14px">' +
+      '<button onclick="pqAddRef()" style="font-family:var(--mono);font-size:9px;padding:6px 14px;background:none;border:1px solid var(--rule2);color:var(--ink4);cursor:pointer">+ Add Row</button>' +
+      '<button onclick="pqClosEditor()" style="flex:1;font-family:var(--mono);font-size:9px;padding:6px;background:var(--ink);color:var(--paper);border:none;cursor:pointer;letter-spacing:1px">Done</button>' +
+      '</div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', e => { if(e.target===ov){ ov.remove(); renderPubRef(); } });
+  }
+
+  window.pqClosEditor = function(){ document.getElementById('accolade-modal').remove(); renderPubRef(); };
+  window.pqUpdateRef = function(i, key, val){
+    const refs = getPubRefs(); refs[i][key] = val; savePubRefs(refs);
+  };
+  window.pqRemoveRef = function(i){
+    const refs = getPubRefs(); refs.splice(i,1); savePubRefs(refs); renderEditor();
+  };
+  window.pqAddRef = function(){
+    const refs = getPubRefs(); refs.push({company:'',pro:'ASCAP',publisherName:'',ipi:''}); savePubRefs(refs); renderEditor();
+  };
+
+  renderEditor();
+}
+
+
+// Pre-populate publisher ref if empty
+(function(){
+  if(!localStorage.getItem('paq-pub-refs')){
+    const defaults = [
+      {company:'PAQ', pro:'ASCAP', publisherName:'PAQPUNCHSONGS', ipi:'1066981819'},
+      {company:'PAQ', pro:'BMI',   publisherName:'PAQ PAQ MUSIC', ipi:''}
+    ];
+    localStorage.setItem('paq-pub-refs', JSON.stringify(defaults));
+  }
+})();
 
 // Start
 dbLoad();
