@@ -1320,12 +1320,16 @@ const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const SB_HDR = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
 
 async function sbFetch(path, opts={}) {
-  const headers = authToken
+  // Always use authToken when available, merge with any passed headers
+  const baseHeaders = authToken
     ? {...SB_HDR, 'Authorization': 'Bearer ' + authToken}
     : SB_HDR;
-  const res = await fetch(SB_URL + '/rest/v1/' + path, {headers, ...opts});
+  const mergedHeaders = {...baseHeaders, ...(opts.headers||{})};
+  const res = await fetch(SB_URL + '/rest/v1/' + path, {...opts, headers: mergedHeaders});
   if (!res.ok) { const e = await res.text(); throw new Error(e); }
-  if (res.status === 204 || res.headers.get('content-length') === '0') return null; const text = await res.text(); return text ? JSON.parse(text) : null;
+  if (res.status === 204 || res.headers.get('content-length') === '0') return null;
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
 }
 
 async function dbLoad() {
@@ -1364,15 +1368,16 @@ async function dbLoad() {
 
 async function dbSave(p) {
   try {
-    const authHdr = authToken ? {'Authorization': 'Bearer ' + authToken} : {};
-    await sbFetch('prospects', {method:'POST',
-      headers:{...SB_HDR, ...authHdr, 'Prefer':'resolution=merge-duplicates'},
-      body:JSON.stringify({
+    await sbFetch('prospects', {
+      method: 'POST',
+      headers: {'Prefer': 'resolution=merge-duplicates'},
+      body: JSON.stringify({
         id: p.id,
         data: p,
         owner_id: p.owner_id || (currentUser?.id || null),
         shared: p.shared || false
-      })});
+      })
+    });
   } catch(e) { console.error('Save error:', e); }
 }
 
