@@ -1325,7 +1325,7 @@ async function sbFetch(path, opts={}) {
     : SB_HDR;
   const res = await fetch(SB_URL + '/rest/v1/' + path, {headers, ...opts});
   if (!res.ok) { const e = await res.text(); throw new Error(e); }
-  return res.status === 204 ? null : res.json();
+  if (res.status === 204 || res.headers.get('content-length') === '0') return null; const text = await res.text(); return text ? JSON.parse(text) : null;
 }
 
 async function dbLoad() {
