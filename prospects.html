@@ -1426,8 +1426,19 @@ document.addEventListener('click', e => {
       }
     } catch(e) {}
   }
-  // No valid session — show login
-  document.getElementById('login-screen').style.display = 'flex';
+  // No valid session — show login, pre-fill email if we know it
+  const loginEl = document.getElementById('login-screen');
+  if (loginEl) loginEl.style.display = 'flex';
+  // Pre-fill email from expired session
+  try {
+    const old = JSON.parse(localStorage.getItem('paq_crm_session')||'{}');
+    if (old.user?.email) {
+      const emailEl = document.getElementById('login-email');
+      if (emailEl) { emailEl.value = old.user.email; }
+      const pwEl = document.getElementById('login-password');
+      if (pwEl) pwEl.focus();
+    }
+  } catch(e) {}
 })();
 </script>
 </body>
