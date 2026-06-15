@@ -1220,6 +1220,12 @@ body.dark .d-tab.on{border-bottom-color:var(--gold-border);color:var(--gold-bord
       <option value="SESAC">SESAC</option>
       <option value="PRS">PRS</option>
     </select>
+    <select class="tb-select" id="filter-type" onchange="renderAll()">
+      <option value="">All Types</option>
+      <option value="songwriter">Songwriter</option>
+      <option value="producer">Producer</option>
+      <option value="both">Songwriter + Producer</option>
+    </select>
     <button class="add-btn" onclick="openAddModal()">+ Add Writer</button>
     <div class="view-toggle">
       <button class="vtb on" id="vtb-cards" onclick="setView('cards')" title="Card view">⊞</button>
@@ -1366,6 +1372,17 @@ body.dark .d-tab.on{border-bottom-color:var(--gold-border);color:var(--gold-bord
         </select>
       </div>
       <div class="form-field"><label class="form-label">IPI Number</label><input class="form-input" id="f-ipi" type="text" placeholder="e.g. 00123456789"></div>
+      <div class="form-field">
+        <label class="form-label">Writer Type</label>
+        <div style="display:flex;gap:14px;align-items:center;padding-top:6px">
+          <label style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--ink3);cursor:pointer">
+            <input type="checkbox" id="f-type-sw" style="width:13px;height:13px;cursor:pointer"> Artist/Songwriter
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--ink3);cursor:pointer">
+            <input type="checkbox" id="f-type-prod" style="width:13px;height:13px;cursor:pointer"> Producer
+          </label>
+        </div>
+      </div>
       <div class="form-field">
         <label class="form-label">Status</label>
         <select class="form-select" id="f-status" onchange="toggleRetentionFields(this.value)">
@@ -2035,6 +2052,8 @@ function getFiltered(){
   if(co) d=d.filter(w=>w.company===co);
   if(adm) d=d.filter(w=>w.admin===adm);
   if(pro) d=d.filter(w=>w.pro===pro);
+  const wtype=document.getElementById('filter-type')?.value;
+  if(wtype) d=d.filter(w=>w.writerType===wtype);
   if(currentFilter==='active') d=d.filter(w=>w.status==='active');
   if(currentFilter==='retention') d=d.filter(w=>w.status==='retention');
   if(currentFilter==='stale') d=d.filter(w=>rowFlags(w).stale||rowFlags(w).pending);
@@ -2695,6 +2714,7 @@ function renderCards(){
       return `<div class="wcard compact-card ${flagCls} ${highlightCls}" onclick="openDetail(${w.id})">
         <div class="wcard-name" title="${w.name}">${w.name}</div>
         ${w.alias?`<div class="wcard-alias">${w.alias}</div>`:''}
+        ${w.writerType?`<div style="font-family:var(--mono);font-size:7px;letter-spacing:0.5px;color:var(--ink5);margin-top:1px;text-transform:uppercase">${w.writerType==='both'?'SW · PROD':w.writerType==='songwriter'?'SW':'PROD'}</div>`:''}
         ${dotHtml}
       </div>`;
     }
@@ -2742,7 +2762,8 @@ function renderCards(){
       : ([4,1].some(q=>w.stmtSent[`q${q}`])?'Sent Q4-Q1':[2,3].some(q=>w.stmtSent[`q${q}`])?'Sent Q2-Q3':'Not sent');
     const cardHtml = `<div class="wcard ${flagCls} ${highlightCls}" onclick="openDetail(${w.id})">
       <div class="wcard-name" title="${w.name}">${w.name}</div>
-      ${w.alias?`<div class="wcard-alias">${w.alias}</div>`:'<div style="margin-bottom:7px"></div>'}
+      ${w.alias?`<div class="wcard-alias">${w.alias}</div>`:'<div style="margin-bottom:4px"></div>'}
+      ${w.writerType?`<div style="font-family:var(--mono);font-size:7px;letter-spacing:0.5px;color:var(--ink5);margin-bottom:4px;text-transform:uppercase">${w.writerType==='both'?'SW · PROD':w.writerType==='songwriter'?'SW':'PROD'}</div>`:''}
       <div class="wcard-dots">
         ${(()=>{ try {
           // Audit row: show based on which pip color matches active key filters
@@ -3032,6 +3053,7 @@ function openEdit(id){
   if(document.getElementById('f-retention-autorenew')) document.getElementById('f-retention-autorenew').checked=w.retentionAutoRenew||false;
   document.getElementById('f-genius').value=w.geniusUrl||'';
   document.getElementById('f-muso').value=w.musoUrl||'';
+  const _ft=w.writerType||''; document.getElementById('f-type-sw').checked=_ft==='songwriter'||_ft==='both'; document.getElementById('f-type-prod').checked=_ft==='producer'||_ft==='both';
   toggleRetentionFields(w.status||'active');
   // Always lock contract fields when opening edit modal
   const _mcf2 = document.getElementById('modal-contract-fields');
@@ -3078,7 +3100,8 @@ async function saveWriter(){
       const d=new Date(s); d.setFullYear(d.getFullYear()+Math.floor(t+r)); d.setDate(d.getDate()+Math.round(((t+r)%1)*365));
       return d.toISOString().split('T')[0];
     })(),
-    retentionAutoRenew:document.getElementById('f-retention-autorenew')?.checked||false};
+    retentionAutoRenew:document.getElementById('f-retention-autorenew')?.checked||false,
+    writerType:(()=>{ const s=document.getElementById('f-type-sw')?.checked, p=document.getElementById('f-type-prod')?.checked; return s&&p?'both':s?'songwriter':p?'producer':''; })()};
   let saved;
   if(editingId){ const i=writers.findIndex(w=>w.id===editingId); writers[i]={...writers[i],...data}; saved=writers[i]; toast('Writer Updated',`${name} has been updated.`); }
   else{ const w={id:nextId++,...data}; writers.push(w); saved=w; toast('Writer Added',`${name} added to the roster.`); }
