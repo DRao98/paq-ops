@@ -1940,7 +1940,7 @@ function showUnsentList(){
   renderAll();
 }
 
-function advanceStmtRun(){
+async function advanceStmtRun(){
   const yr = TODAY.getFullYear();
   // Q4-Q1 (year Y) → Q2-Q3 (year Y+1);  Q2-Q3 (year Y) → Q4-Q1 (year Y)
   const nextYear = STMT_RUN.qs[0]===4 ? STMT_RUN.year+1 : STMT_RUN.year;
@@ -1995,14 +1995,26 @@ function advanceStmtRun(){
     toast('Run Saved', `${snapshot.periodStr} statement data has been saved.`);
   }
 
-  // Clear current run stmt data
+  // Clear current run stmt data.
+  // Safety: re-fetch the latest server copy of each writer first and merge
+  // just the stmt fields being cleared, so a stale in-memory writers array
+  // (e.g. an old tab left open) can't blow away audit/scheduleA edits made
+  // elsewhere since this tab last loaded.
   const runNum = STMT_RUN.qs[0]===4 ? 1 : 2;
+  let freshRows = null;
+  try { freshRows = await sbFetch('writers?select=id,data&order=id'); } catch(e) { freshRows = null; }
+  const freshById = {};
+  if(freshRows) freshRows.forEach(r => { freshById[r.id] = { id: r.id, ...r.data }; });
+
   writers.forEach(w=>{
-    STMT_RUN.qs.forEach(q=>{ w.stmtRecv[`q${q}`]=false; w.stmtSent[`q${q}`]=false; });
-    w[`stmtRecvDate${runNum}`]='';
-    w[`stmtSentDate${runNum}`]='';
-    if(runNum===1) w.stmtSentDate='';
-    dbSave(w);
+    const base = freshById[w.id] || w; // prefer the latest server copy as the base
+    STMT_RUN.qs.forEach(q=>{ base.stmtRecv[`q${q}`]=false; base.stmtSent[`q${q}`]=false; });
+    base[`stmtRecvDate${runNum}`]='';
+    base[`stmtSentDate${runNum}`]='';
+    if(runNum===1) base.stmtSentDate='';
+    // Keep local in-memory writers array in sync with what we're about to save
+    Object.assign(w, base);
+    dbSave(base);
   });
 
   pendingAdvanceUnsent = [];
@@ -3721,8 +3733,17 @@ function refreshDetail(id){
   const scrollTop = panel.scrollTop;
   _suppressDetailClose = true;
   renderAll();
-  currentDetailId = null;
-  openDetail(id);
+  // Re-render in place — keep currentDetailId and currentDetailTab as-is,
+  // don't go through openDetail() since that resets the tab to Bio.
+  const w = writers.find(x=>x.id===id);
+  if(w){
+    currentDetailId = id;
+    document.getElementById('d-name').textContent = w.name;
+    document.getElementById('d-alias').textContent = w.alias ? `pka ${w.alias}` : '';
+    document.getElementById('d-edit-btn').onclick = () => openEdit(id);
+    renderDetailBody(id);
+    if(wasOpen) panel.classList.add('open');
+  }
   if(!wasOpen) closeDetail();
   panel.scrollTop = scrollTop;
   requestAnimationFrame(() => { _suppressDetailClose = false; });
@@ -4072,6 +4093,23 @@ function openPubRefEditor(){
 
 // Start
 dbLoad();
+
+// Safety net: if this tab was left open/backgrounded and the user comes back,
+// silently refresh from the server so this tab doesn't act on a stale writers
+// array (which previously risked overwriting fresher edits made elsewhere
+// during bulk operations like advancing the statement period).
+let _lastVisibilityRefresh = Date.now();
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible'){
+    const now = Date.now();
+    // Only refresh if it's been a while since we last did, to avoid spamming
+    // the DB on quick tab switches.
+    if(now - _lastVisibilityRefresh > 5*60*1000){
+      _lastVisibilityRefresh = now;
+      dbLoad();
+    }
+  }
+});
 </script>
 <!-- Alert Priority Modal -->
 <div id="alert-priority-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.5);align-items:center;justify-content:center">
